@@ -16,7 +16,6 @@
           type="number"
           v-model.number="shortsValues.trCount"
           @input="updateShortsCalculations"
-          :placeholder="'Enter TR Count'"
         />
       </div>
 

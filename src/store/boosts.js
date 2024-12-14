@@ -3,7 +3,6 @@ export const boosts = [
     key: 'hoursInTR',
     label: 'Hours in TR',
     type: 'number',
-    placeholder: 'Enter hours',
   },
 
   {
