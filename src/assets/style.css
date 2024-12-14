@@ -61,6 +61,7 @@ input {
   justify-content: space-between;
   margin-bottom: 10px; /* Weniger Abstand zwischen Gruppen */
   font-size: 14px; /* Kleinere Schriftgröße */
+  height: 27px;
 }
 
 .input-group label {
@@ -374,15 +375,19 @@ input[type="number"] {
 #app {
   padding-top: 10px; /* Platz schaffen für die Navbar */
 }
-.inputs-container .input-group:nth-child(even) {
-  background-color: #222; /* Farbe für gerade Eingabefelder */
+/* Hintergrund nur für Eingruppierungen mit Eingabefeldern */
+.inputs-container .input-group:not(:has(button)):nth-child(even) {
+  background-color: #222;
 }
 
-.inputs-container .input-group:nth-child(odd) {
-  background-color: #1e1e1e; /* Farbe für ungerade Eingabefelder */
+.inputs-container .input-group:not(:has(button)):nth-child(odd) {
+  background-color: #1e1e1e;
 }
 
 .inputs-container .input-group {
   padding: 1px; /* Optional für etwas Platz */
   border-radius: 4px; /* Optional für abgerundete Ecken */
+}
+.input-group input[type="checkbox"] {
+  margin-left: 63px;
 }
