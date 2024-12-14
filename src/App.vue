@@ -3,9 +3,9 @@
     <!-- Navbar mit Current Orbs und Improved Orbs -->
     <div class="navbar">
       <div class="navbar-center">
-        <router-link to="/current-stats">Current Stats</router-link>
-        <router-link to="/improved-stats">Improved Stats</router-link>
-        <router-link to="/shorts-calculator">Shorts Calculator</router-link>
+        <router-link to="/current-stats" active-class="active-link">Current Stats</router-link>
+        <router-link to="/improved-stats" active-class="active-link">Improved Stats</router-link>
+        <router-link to="/shorts-calculator" active-class="active-link">Shorts Calculator</router-link>
       </div>
     </div>
 

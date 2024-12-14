@@ -1,6 +1,5 @@
 <template>
   <div class="improved-stats">
-    <h2>Improved Stats</h2>
     <div class="inputs-container">
       <div class="input-group">
         <button class="reset" @click="resetImprovedFields">Reset All Fields</button>

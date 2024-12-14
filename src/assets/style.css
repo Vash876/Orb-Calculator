@@ -44,6 +44,11 @@ h2 {
   color: #ffffff;
 }
 
+input {
+  height: 23px; /* Setzt die Höhe auf 40px */
+}
+
+
 .inputs-container {
   width: 400px; /* Begrenze die Breite des Containers */
   margin: 0 auto; /* Zentriere den Container */
@@ -88,8 +93,8 @@ h2 {
 }
 
 .input-group input[type="checkbox"] {
-  width: 15px;
-  height: 15px;
+  width: 25px;
+  height: 25px;
 }
 
 /* Boxen um Eingabefelder */
@@ -232,8 +237,8 @@ input[type="checkbox"]:checked {
 input[type="checkbox"]:checked::after {
   content: ''; /* Platzhalter für das Häkchen */
   position: absolute;
-  top: -1px; /* Vertikale Position des Häkchens */
-  left: 3px; /* Horizontale Position des Häkchens */
+  top: 4px; /* Vertikale Position des Häkchens */
+  left: 7px; /* Horizontale Position des Häkchens */
   width: 4px;
   height: 8px;
   border: solid white; /* Weiße Farbe für das Häkchen */
@@ -252,8 +257,8 @@ input[type="checkbox"]:disabled {
 input[type="checkbox"]:disabled::after {
   content: ''; /* Platzhalter für den Haken */
   position: absolute;
-  top: -1px; /* Vertikale Position des Haken */
-  left: 3px; /* Horizontale Position des Haken */
+  top: 4px; /* Vertikale Position des Haken */
+  left: 7px; /* Horizontale Position des Haken */
   width: 4px;
   height: 8px;
   border: solid white; /* Hakenfarbe */
@@ -360,4 +365,24 @@ input[type="number"] {
 }
 .field-green {
   background-color: #d4edda; /* Hellgrün */
+}
+.active-link {
+  color: #76c7c0; /* Heller Türkis */
+  background-color: #000000; /* Gleicher Hintergrund wie Hover */
+  border-radius: 5px; /* Optional */
+}
+#app {
+  padding-top: 10px; /* Platz schaffen für die Navbar */
+}
+.inputs-container .input-group:nth-child(even) {
+  background-color: #222; /* Farbe für gerade Eingabefelder */
+}
+
+.inputs-container .input-group:nth-child(odd) {
+  background-color: #1e1e1e; /* Farbe für ungerade Eingabefelder */
+}
+
+.inputs-container .input-group {
+  padding: 1px; /* Optional für etwas Platz */
+  border-radius: 4px; /* Optional für abgerundete Ecken */
 }

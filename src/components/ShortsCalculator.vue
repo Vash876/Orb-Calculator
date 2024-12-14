@@ -1,6 +1,5 @@
 <template>
   <div class="shorts-calculator">
-    <h2>Shorts Calculator</h2>
     <div class="inputs-container">
       <!-- Buttons für Auto-Fill und Reset -->
       <div class="input-group">

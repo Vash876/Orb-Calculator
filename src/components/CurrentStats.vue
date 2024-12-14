@@ -1,6 +1,5 @@
 <template>
   <div class="current-stats">
-    <h2>Current Stats</h2>
     <div class="inputs-container">
       <div class="input-group">
         <button class="reset" @click="resetFields">Reset All Fields</button>
