@@ -355,3 +355,9 @@ input[type="number"]::-webkit-outer-spin-button {
 input[type="number"] {
   -moz-appearance: textfield;
 }
+.field-blue {
+  background-color: #cce5ff; /* Hellblau */
+}
+.field-green {
+  background-color: #d4edda; /* Hellgrün */
+}
