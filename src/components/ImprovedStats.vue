@@ -3,7 +3,7 @@
     <h2>Improved Stats</h2>
     <div class="inputs-container">
       <div class="input-group">
-        <button @click="resetImprovedFields">Reset All Fields</button>
+        <button class="reset" @click="resetImprovedFields">Reset All Fields</button>
       </div>
       <!-- Catch-Up Multiplier -->
       <div class="input-group">
@@ -74,7 +74,7 @@
 
       <!-- Orb Count -->
       <div class="current-results">
-        <h3>Orb Count  : {{ improvedOrbs }}</h3>
+        <h3>Final Orb Count  : {{ improvedOrbs }}</h3>
       </div>
     </div>
   </div>

@@ -3,7 +3,7 @@
     <h2>Current Stats</h2>
     <div class="inputs-container">
       <div class="input-group">
-        <button @click="resetFields">Reset All Fields</button>
+        <button class="reset" @click="resetFields">Reset All Fields</button>
       </div>
       <!-- Catch-Up Multiplier -->
       <div class="input-group">

@@ -4,9 +4,10 @@
     <div class="inputs-container">
       <!-- Buttons für Auto-Fill und Reset -->
       <div class="input-group">
-        <button @click="autoFillWithCurrentStats">Auto-Fill with Current Stats</button>
+        <button @click="autoFillWithImprovedStats">Auto-Fill with Improved Stats</button>
         <button @click="resetFields">Reset All Fields</button>
       </div>
+
 
       <!-- TR Count Eingabe -->
       <div class="input-group">
@@ -27,7 +28,7 @@
           v-model="allTimeOrbsInput"
           @input="handleAllTimeOrbsTyping"
           @blur="validateAllTimeOrbsInput"
-          placeholder="Enter All-Time Orbs"
+          placeholder="e.g 4.5e9"
         />
       </div>
 
@@ -37,6 +38,7 @@
         
         <!-- Eingabefeld für numerische Werte -->
         <input
+          type="number"
           v-if="boost.type === 'number'"
           v-model.number="shortsValues[boost.key]"
           @input="updateShortsCalculations"
@@ -54,19 +56,13 @@
       </div>
     </div>
 
-    <!-- Einzelanzeige von tatsächlichen Orbs und Orb-Anforderung -->
-    <div class="single-results">
-      <h3>Current Calculations</h3>
-      <p>Actual Orbs: {{ formatBoostValue(actualOrbs) }}</p>
-    </div>
-
     <!-- Ergebnisse -->
     <div class="results">
       <h3>Orb Requirements and Results</h3>
       <table class="results-table">
         <thead>
           <tr>
-            <th>TR X Requirement</th>
+            <th>TR Requirement</th>
             <th>All-Time Orbs</th>
             <th>Status</th>
           </tr>
@@ -118,10 +114,11 @@ export default {
     ...mapGetters(['currentValues']), // Zugriff auf Current Stats aus Vuex
   },
   methods: {
-    autoFillWithCurrentStats() {
+    autoFillWithImprovedStats() {
+      // Greife auf die improvedValues aus dem Store zu
       this.shortsValues = {
         ...this.shortsValues,
-        ...this.currentValues,
+        ...this.$store.state.improvedValues, // Fülle mit improvedValues
       };
       this.updateShortsCalculations();
       this.saveToLocalStorage();

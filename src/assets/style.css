@@ -39,7 +39,7 @@ h2 {
 }
 
 .inputs-container {
-  width: 300px; /* Begrenze die Breite des Containers */
+  width: 400px; /* Begrenze die Breite des Containers */
   margin: 0 auto; /* Zentriere den Container */
   padding: 10px; /* Weniger Polsterung */
 }
@@ -49,7 +49,7 @@ h2 {
   align-items: center;
   justify-content: space-between;
   margin-bottom: 10px; /* Weniger Abstand zwischen Gruppen */
-  font-size: 12px; /* Kleinere Schriftgröße */
+  font-size: 14px; /* Kleinere Schriftgröße */
 }
 
 .input-group label {
@@ -166,9 +166,10 @@ button:hover {
   color: #d3d3d3;
 }
 
-.reset-button {
+.reset {
   text-align: center;
-  margin-top: 10px;
+  margin-bottom: 4px;
+  margin-left: auto;
 }
 
 .reset-button button {
@@ -339,4 +340,12 @@ input:disabled {
 }
 .missing-orbs {
   color: #ff8888; /* Leichtes Rot, um Missing visuell hervorzuheben */
+}
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+input[type="number"] {
+  -moz-appearance: textfield;
 }
