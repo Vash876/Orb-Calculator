@@ -1,0 +1,342 @@
+/* Allgemeine Seiteinstellungen */
+
+
+body {
+  background-color: #121212; /* Dunkler Hintergrund */
+  color: #f1f1f1; /* Helle Textfarbe */
+  font-family: 'Arial', sans-serif;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  min-height: 100vh;
+  margin-top: 50px;
+}
+
+h2 {
+  text-align: center;
+  font-size: 18px;
+  margin-top: 20px;
+}
+
+/* Container für den gesamten Inhalt */
+.calculator {
+  width: 100%;
+  max-width: 800px;
+  padding: 10px;
+  background-color: #1e1e1e; /* Etwas hellerer Hintergrund für den Inhalt */
+  border-radius: 8px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Überschrift */
+.main-title {
+  text-align: center;
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 10px;
+  color: #ffffff;
+}
+
+.inputs-container {
+  width: 300px; /* Begrenze die Breite des Containers */
+  margin: 0 auto; /* Zentriere den Container */
+  padding: 10px; /* Weniger Polsterung */
+}
+
+.input-group {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px; /* Weniger Abstand zwischen Gruppen */
+  font-size: 12px; /* Kleinere Schriftgröße */
+}
+
+.input-group label {
+  flex: 1; /* Gleiche Breite für die Labels */
+  text-align: left;
+}
+
+.input-group input {
+  flex: 0 0 80px; /* Eingabefelder haben eine feste Breite von 80px */
+  margin-left: 10px; /* Abstand zwischen Label und Eingabe */
+  padding: 5px; /* Weniger Innenabstand */
+  font-size: 12px; /* Kleinere Schriftgröße */
+  max-width: 80px; /* Begrenze die Breite zusätzlich */
+  box-sizing: border-box; /* Sicherstellen, dass Padding und Border berücksichtigt werden */
+}
+
+.boost-value {
+  flex: 0.5; /* Kleinere Breite für Boost-Werte */
+  text-align: right;
+  color: #76c7c0;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+
+/* Eingabefelder und Checkboxen im Fokus */
+.input-group input[type="number"]:focus, .input-group input[type="checkbox"]:focus {
+  outline: none;
+  border-color: #76c7c0; /* Farbe beim Fokus */
+}
+
+.input-group input[type="checkbox"] {
+  width: 15px;
+  height: 15px;
+}
+
+/* Boxen um Eingabefelder */
+.result-box {
+  background-color: #333; /* Dunkler Hintergrund für das Ergebnis */
+  padding: 10px;
+  margin-top: 10px;
+  border-radius: 8px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.result-box h3 {
+  font-size: 18px;
+  color: #ffffff;
+}
+
+.result-box p {
+  font-size: 14px;
+  color: #d3d3d3;
+}
+
+/* Hover-Effekte für Links und Buttons */
+a:hover {
+  color: #76c7c0; /* Hellerer Farbton bei Hover */
+  text-decoration: underline;
+}
+
+button:hover {
+  background-color: #444; /* Hellerer Hintergrund für Buttons */
+  cursor: pointer;
+}
+
+/* Menü-Stile */
+.navbar {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 10px;
+  position: fixed;  /* Fixiert das Menü oben */
+  top: 0;
+  left: 0;
+  width: 100%;
+  background-color: #1e1e1e; /* Dunkler Hintergrund für das Menü */
+  padding: 5px 0; /* Etwas Abstand oben und unten */
+  z-index: 10;  /* Damit es immer über anderen Inhalten bleibt */
+}
+
+.navbar a {
+  font-size: 15px;
+  color: #ffffff;
+  text-decoration: none;
+  padding: 10px 15px; /* Polsterung für Klickbare Fläche */
+  display: inline-flex; /* Stellt sicher, dass alle Links nebeneinander bleiben */
+  align-items: center; /* Vertikale Zentrierung des Textes */
+}
+
+.navbar a:hover {
+  color: #b0b0b0; /* Ein etwas helleres Grau bei Hover */
+  background-color: #000000; /* Dunkler Hintergrund */
+  border-radius: 5px; /* Optionale Abrundung für einen schöneren Effekt */
+}
+
+
+
+.result-box {
+  background-color: #333; /* Dunkler Hintergrund für das Ergebnis */
+  padding: 10px;
+  margin-top: 10px;
+  border-radius: 8px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.result-box h3 {
+  font-size: 18px;
+  color: #ffffff;
+}
+
+.result-box p {
+  font-size: 14px;
+  color: #d3d3d3;
+}
+
+.reset-button {
+  text-align: center;
+  margin-top: 10px;
+}
+
+.reset-button button {
+  background-color: #ff4444;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  font-size: 14px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.reset-button button:hover {
+  background-color: #cc0000;
+}
+
+/* Container für Eingabegruppen */
+.input-group {
+  display: flex; /* Flexbox für gleichmäßige Ausrichtung */
+  align-items: center; /* Vertikale Ausrichtung der Inhalte */
+  gap: 10px; /* Abstand zwischen Label, Checkbox und Boost-Wert */
+  margin-bottom: 10px; /* Abstand zwischen den Gruppen */
+}
+
+/* Labels für Checkboxen */
+.input-group label {
+  flex: 1; /* Füllt den verfügbaren Platz */
+  text-align: left; /* Links ausgerichtet */
+}
+
+/* Standard-Stil für Checkboxen */
+input[type="checkbox"] {
+  appearance: none; /* Entfernt den Standard-Look der Checkbox */
+  width: 16px;
+  height: 16px;
+  margin: 0;
+  padding: 0;
+  background-color: #fff; /* Weißer Hintergrund für aktive Checkboxen */
+  border: 2px solid #ccc; /* Grauer Rand */
+  border-radius: 3px;
+  cursor: pointer;
+  position: relative;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+/* Stil für aktivierte Checkboxen */
+input[type="checkbox"]:checked {
+  background-color: #4caf50; /* Hintergrundfarbe für aktivierte Checkboxen */
+  border-color: #4caf50; /* Randfarbe für aktivierte Checkboxen */
+}
+
+/* Haken für aktivierte Checkboxen */
+input[type="checkbox"]:checked::after {
+  content: ''; /* Platzhalter für das Häkchen */
+  position: absolute;
+  top: -1px; /* Vertikale Position des Häkchens */
+  left: 3px; /* Horizontale Position des Häkchens */
+  width: 4px;
+  height: 8px;
+  border: solid white; /* Weiße Farbe für das Häkchen */
+  border-width: 0 2px 2px 0; /* Formt das Häkchen */
+  transform: rotate(45deg); /* Dreht das Häkchen */
+}
+
+/* Stil für deaktivierte Checkboxen */
+input[type="checkbox"]:disabled {
+  background-color: #76c7c0; /* Hintergrundfarbe für deaktivierte Checkboxen */
+  border-color: #4b9b9e; /* Randfarbe */
+  cursor: not-allowed;
+}
+
+/* Haken in der Checkbox (nur bei deaktivierten Checkboxen) */
+input[type="checkbox"]:disabled::after {
+  content: ''; /* Platzhalter für den Haken */
+  position: absolute;
+  top: -1px; /* Vertikale Position des Haken */
+  left: 3px; /* Horizontale Position des Haken */
+  width: 4px;
+  height: 8px;
+  border: solid white; /* Hakenfarbe */
+  border-width: 0 2px 2px 0; /* Formt den Haken */
+  transform: rotate(45deg); /* Dreht den Haken um 45 Grad */
+}
+
+input:disabled {
+  cursor: not-allowed;
+  background-color: #00b2ee; /* Dunkleres Blau für deaktivierte Felder */
+  color: #ffffff; /* Weißer Text für besseren Kontrast */
+  opacity: 0.7;
+}
+
+/* Flexbox-Container für Checkboxen */
+.input-group input[type="checkbox"] {
+  flex: none; /* Verhindert, dass Checkboxen die Breite des Flex-Containers einnehmen */
+}
+
+.results-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+  font-size: 14px;
+  color: #f1f1f1;
+}
+
+.results-table th,
+.results-table td {
+  border: 1px solid #444;
+  padding: 8px;
+  text-align: center;
+}
+
+.results-table th {
+  background-color: #333;
+  color: #fff;
+  font-weight: bold;
+}
+
+.results-table tr:nth-child(even) {
+  background-color: #222; /* Abwechselndes Hintergrundmuster */
+}
+
+.results-table tr:nth-child(odd) {
+  background-color: #1e1e1e;
+}
+
+.fulfilled {
+  color: #4caf50; /* Grün für Fulfilled */
+  font-weight: bold;
+}
+
+.missing {
+  color: #ff4444; /* Rot für Missing */
+  font-weight: bold;
+}
+
+.results {
+  margin-top: 20px;
+}
+.results h3 {
+  font-size: 18px;
+  margin-bottom: 10px;
+}
+.results ul {
+  list-style-type: none;
+  padding: 0;
+}
+.results li {
+  font-size: 14px;
+  margin: 5px 0;
+}
+.fulfilled {
+  color: green;
+  font-weight: bold;
+}
+.missing {
+  color: red;
+  font-weight: bold;
+}
+.single-results {
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+.current-results {
+  margin-top: 20px;
+  margin-bottom: 20px;
+  text-align: center; /* Zentriert den Text */
+}
+.missing-orbs {
+  color: #ff8888; /* Leichtes Rot, um Missing visuell hervorzuheben */
+}
