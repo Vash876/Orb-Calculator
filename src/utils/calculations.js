@@ -1,26 +1,17 @@
-import { boosts } from '@/store/boosts'; // Hol die Boost-Daten aus der zentralen Datei
+export function formatNumber(value) {
+  const suffixes = ["", "m", "b", "t", "qa", "qu", "sx", "sp", "oc", "n", "d"];
+  let tier = Math.floor(Math.log10(value) / 3);
 
-export function calculateOrbs(values) {
-  let result = 1;
+  if (tier === 0) {
+    return value.toFixed(2);
+  }
 
-  // Iteriere durch alle Boosts und wende Multiplikatoren an
-  boosts.forEach(boost => {
-    const value = values[boost.key]; // Hole den entsprechenden Wert aus den Eingabewerten
+  if (tier >= suffixes.length) {
+    return value.toExponential(2);
+  }
 
-    if (boost.type === 'number' && value !== undefined) {
-      // Multipliziere mit dem entsprechenden Wert, falls der Boost ein Number ist
-      result *= Math.pow(value, boost.multiplier || 1);
-    }
+  const suffix = suffixes[tier];
+  const scaledValue = value / Math.pow(10, tier * 3);
 
-    if (boost.type === 'boolean' && value) {
-      // Wenn der Boost ein Boolean ist, multipliziere mit dem Multiplikator, wenn aktiv
-      result *= boost.multiplier || 1;
-    }
-  });
-
-  return result;
-}
-
-export function calculateCatchUp(hoursInTR) {
-  return ((hoursInTR * 0.00024) / 0.25 + 1).toFixed(2); // Berechnung des Catch-Up Multipliers
+  return `${scaledValue.toFixed(2)}${suffix}`;
 }

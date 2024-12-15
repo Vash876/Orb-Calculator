@@ -8,7 +8,7 @@
       <div class="input-group">
         <label>Catch-Up Multiplier</label>
         <span class="boost-value">
-          {{ formatBoostValue(cupMultiplier) }}
+          {{ formatNumber(cupMultiplier) }}
         </span>
       </div>
 
@@ -43,17 +43,16 @@
             1
           </template>
           <template v-else-if="boost.key === 'hoursInTR'">
-            {{ formatBoostValue(Math.pow(boostMultipliers[boost.key], 2) || 1) }}
+            {{ formatNumber(Math.pow(boostMultipliers[boost.key], 2) || 1) }}
           </template>
           <template v-else>
-            {{ formatBoostValue(boostMultipliers[boost.key] || 1) }}
+            {{ formatNumber(boostMultipliers[boost.key] || 1) }}
           </template>
+
         </span>
       </div>
-
-      <!-- Orb Count -->
       <div class="current-results">
-        <h3>Current Orb Count: {{ formatExponential(currentOrbs) }}</h3>
+        <h3>Current Orb Count: {{ formatNumber(currentOrbs) }}</h3>
       </div>
     </div>
   </div>
@@ -81,6 +80,25 @@ export default {
     },
   },
   methods: {
+    formatNumber(value) {
+      const suffixes = ["", "", "m", "b", "t", "qa", "qu", "sx", "sp", "oc", "n", "d"];
+      let tier = Math.floor(Math.log10(value) / 3);
+
+      console.log(`Value: ${value}, Tier: ${tier}, Suffix: ${suffixes[tier]}`);
+
+      if (tier === 0) {
+        return value.toFixed(2);
+      }
+
+      if (tier >= suffixes.length) {
+        return value.toExponential(2);
+      }
+
+      const suffix = suffixes[tier];
+      const scaledValue = value / Math.pow(10, tier * 3);
+
+      return `${scaledValue.toFixed(2)}${suffix}`;
+    },
     formatExponential(value) {
       return value.replace('+', '');
     },
@@ -181,17 +199,6 @@ export default {
           this.setCurrentValues(parsedValues); // Vuex-Store aktualisieren
           this.updateBoostMultipliers();
         }
-      }
-    },
-    formatBoostValue(value) {
-      try {
-        if (value >= 1000000) {
-          return value.toExponential(2);
-        }
-        return value.toFixed(2);
-      } catch (error) {
-        console.error('Error formatting boost value:', error);
-        return '1.00';
       }
     },
   },

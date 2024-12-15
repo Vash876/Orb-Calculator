@@ -39,7 +39,7 @@ function calculateOrbs(values, isImproved = false) {
   result *= catchUpMultiplier;
 
   // Rückgabe des Ergebnisses in wissenschaftlicher Notation
-  return result.toExponential(2);
+  return result;
 }
 
 export const store = createStore({

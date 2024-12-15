@@ -8,7 +8,7 @@
       <div class="input-group">
         <label>Catch-Up Multiplier</label>
         <span class="boost-value">
-          {{ formatBoostValue(improvedCupMultiplier) }}
+          {{ formatNumber(improvedCupMultiplier) }}
         </span>
       </div>
 
@@ -24,7 +24,7 @@
           :disabled="isFieldDisabled('additionalHours')"
         />
         <span class="boost-value">
-          {{ formatBoostValue(Math.pow(improvedBoostMultipliers['additionalHours'],2) || 1) }}
+          {{ formatNumber(Math.pow(improvedBoostMultipliers['additionalHours'],2) || 1) }}
         </span>
       </div>
 
@@ -42,6 +42,7 @@
 
             <!-- Eingabefeld für numerische Werte -->
             <input
+              type="number"
               v-if="boost.type === 'number'"
               v-model.number="improvedValues[boost.key]"
               @input="handleImprovedInputChange(boost)"
@@ -67,7 +68,7 @@
                 1
               </template>
               <template v-else>
-                {{ formatBoostValue(improvedBoostMultipliers[boost.key] || 1) }}
+                {{ formatNumber(improvedBoostMultipliers[boost.key] || 1) }}
               </template>
             </span>
           </div>
@@ -76,7 +77,7 @@
 
       <!-- Orb Count -->
       <div class="current-results">
-        <h3>Final Orb Count  : {{ formatExponential(improvedOrbs) }}</h3>
+        <h3>Final Orb Count  : {{ formatNumber(improvedOrbs) }}</h3>
       </div>
     </div>
   </div>
@@ -107,6 +108,25 @@ export default {
     ...mapGetters(['currentOrbs', 'improvedOrbs']), // Zugriff auf Getter von Vuex
   },
   methods: {
+    formatNumber(value) {
+      const suffixes = ["", "", "m", "b", "t", "qa", "qu", "sx", "sp", "oc", "n", "d"];
+      let tier = Math.floor(Math.log10(value) / 3);
+
+      console.log(`Value: ${value}, Tier: ${tier}, Suffix: ${suffixes[tier]}`);
+
+      if (tier === 0) {
+        return value.toFixed(2);
+      }
+
+      if (tier >= suffixes.length) {
+        return value.toExponential(2);
+      }
+
+      const suffix = suffixes[tier];
+      const scaledValue = value / Math.pow(10, tier * 3);
+
+      return `${scaledValue.toFixed(2)}${suffix}`;
+    },
     formatExponential(value) {
       return value.replace('+', '');
     },
@@ -258,17 +278,6 @@ export default {
         this.improvedValues = JSON.parse(savedValues);
       } else {
         this.resetImprovedFields();
-      }
-    },
-    formatBoostValue(value) {
-      try {
-        if (value >= 1000) {
-          return value.toExponential(2);
-        }
-        return value.toFixed(2);
-      } catch (error) {
-        console.error('Error formatting boost value:', error);
-        return '1.00';
       }
     },
   },

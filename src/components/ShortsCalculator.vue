@@ -20,13 +20,13 @@
       <!-- All-Time Orbs Eingabe -->
       <div class="input-group">
         <label>All-Time Orbs</label>
-        <input
-          type="text"
-          v-model="allTimeOrbsInput"
-          @input="handleAllTimeOrbsTyping"
-          @blur="validateAllTimeOrbsInput"
-          placeholder="e.g 4.5e9"
-        />
+          <input
+            type="text"
+            v-model="allTimeOrbsInput"
+            @blur="validateAllTimeOrbsInput"
+            @input="handleAllTimeOrbsTyping"
+            placeholder="e.g 4.5b"
+          />
       </div>
 
       <!-- Inputs für Boosts -->
@@ -110,17 +110,17 @@
         </thead>
         <tbody>
           <tr v-for="(requirement, index) in trRequirements" :key="index">
-            <td>TR {{ shortsValues.trCount + index }} Req: {{ formatExponential(requirement) }}</td>
+            <td>TR {{ shortsValues.trCount + index }} Req: {{ formatNumber(requirement) }}</td>
             <td :class="{'missing-orbs': !orbResults[index].canReach}">
-              {{ formatExponential(orbResults[index].endAllTimeOrbs) }} 
+              {{ formatNumber(orbResults[index].endAllTimeOrbs) }} 
               <span class="added-orbs">
-                (+{{ formatExponential(orbResults[index].addedAllTimeOrbs) }})
+                (+{{ formatNumber(orbResults[index].addedAllTimeOrbs) }})
               </span>
             </td>
             <td>
               <span
                 :class="{'fulfilled': orbResults[index].canReach, 'missing': !orbResults[index].canReach}">
-                {{ orbResults[index].canReach ? 'Fulfilled' : 'Missing (' + formatExponential(orbResults[index].missing) + ')' }}
+                {{ orbResults[index].canReach ? 'Fulfilled' : 'Missing (' + formatNumber(orbResults[index].missing) + ')' }}
               </span>
             </td>
           </tr>
@@ -161,9 +161,27 @@ export default {
     ...mapGetters(['currentValues']), // Zugriff auf Current Stats aus Vuex
   },
   methods: {
-    formatExponential(value) {
-      return value.replace('+', '');
+
+    formatNumber(value) {
+      const suffixes = ["", "", "m", "b", "t", "qa", "qu", "sx", "sp", "oc", "n", "d"];
+      let tier = Math.floor(Math.log10(value) / 3);
+
+      console.log(`Value: ${value}, Tier: ${tier}, Suffix: ${suffixes[tier]}`);
+
+      if (tier === 0) {
+        return value.toFixed(2);
+      }
+
+      if (tier >= suffixes.length) {
+        return value.toExponential(2);
+      }
+
+      const suffix = suffixes[tier];
+      const scaledValue = value / Math.pow(10, tier * 3);
+
+      return `${scaledValue.toFixed(2)}${suffix}`;
     },
+
     initializeBoostRows() {
       this.boosts.forEach((boost) => {
         if (boost.expand === '1' && !this.boostRows[boost.key]) {
@@ -171,6 +189,7 @@ export default {
         }
       });
     },
+
     addBoostRow(key) {
       if (this.boostRows[key].length < 5) {
         // Letzten Wert der aktuellen Zeilen kopieren
@@ -180,12 +199,14 @@ export default {
         this.updateShortsCalculations(); // Berechnungen aktualisieren
       }
     },
+
     removeBoostRow(key, index) {
       if (this.boostRows[key].length > 1) {
         this.boostRows[key].splice(index, 1); // Zeile entfernen
         this.updateShortsCalculations();
       }
     },
+
     generateLabel(baseLabel, index, totalRows) {
       if (totalRows === 1) {
         return `${baseLabel} | Short #1 - #5`; // Standardzustand
@@ -221,63 +242,63 @@ export default {
       this.saveToLocalStorage();
     },
 
-autoFillWithImprovedStats() {
-  const improvedValues = this.$store.state.improvedValues;
+    autoFillWithImprovedStats() {
+      const improvedValues = this.$store.state.improvedValues;
 
-  console.log("Improved Values aus Vuex:", improvedValues); // Debugging
+      console.log("Improved Values aus Vuex:", improvedValues); // Debugging
 
-  // shortsValues für nicht-expandierbare Felder aktualisieren
-  this.shortsValues = {
-    ...this.shortsValues,
-    ...Object.fromEntries(
-      Object.entries(improvedValues).filter(([key]) =>
-        this.boosts.some((boost) => boost.key === key && boost.expand !== '1')
-      )
-    ),
-  };
+      // shortsValues für nicht-expandierbare Felder aktualisieren
+      this.shortsValues = {
+        ...this.shortsValues,
+        ...Object.fromEntries(
+          Object.entries(improvedValues).filter(([key]) =>
+            this.boosts.some((boost) => boost.key === key && boost.expand !== '1')
+          )
+        ),
+      };
 
-  // boostRows für erweiterbare Felder aktualisieren
-  this.boosts.forEach((boost) => {
-    if (boost.expand === '1') {
-      console.log(`Aktualisiere boostRows für ${boost.key}`); // Debugging
+      // boostRows für erweiterbare Felder aktualisieren
+      this.boosts.forEach((boost) => {
+        if (boost.expand === '1') {
+          console.log(`Aktualisiere boostRows für ${boost.key}`); // Debugging
 
-      const boostValue = improvedValues[boost.key];
+          const boostValue = improvedValues[boost.key];
 
-      if (Array.isArray(boostValue)) {
-        // Falls boostRows[boost.key] existiert, nur Werte aktualisieren
-        if (this.boostRows[boost.key]) {
-          boostValue.forEach((value, index) => {
-            if (this.boostRows[boost.key][index]) {
-              this.boostRows[boost.key][index].value = value;
+          if (Array.isArray(boostValue)) {
+            // Falls boostRows[boost.key] existiert, nur Werte aktualisieren
+            if (this.boostRows[boost.key]) {
+              boostValue.forEach((value, index) => {
+                if (this.boostRows[boost.key][index]) {
+                  this.boostRows[boost.key][index].value = value;
+                } else {
+                  // Neue Zeilen hinzufügen, falls zu wenige existieren
+                  this.boostRows[boost.key].push({ value });
+                }
+              });
+
+              // Überschüssige Zeilen nicht entfernen, damit Felder geöffnet bleiben
             } else {
-              // Neue Zeilen hinzufügen, falls zu wenige existieren
-              this.boostRows[boost.key].push({ value });
+              // Initialisierung, falls boostRows leer ist
+              this.boostRows[boost.key] = boostValue.map((value) => ({ value }));
             }
-          });
-
-          // Überschüssige Zeilen nicht entfernen, damit Felder geöffnet bleiben
-        } else {
-          // Initialisierung, falls boostRows leer ist
-          this.boostRows[boost.key] = boostValue.map((value) => ({ value }));
+          } else if (boostValue !== undefined) {
+            // Wenn nur ein Wert vorhanden ist
+            if (this.boostRows[boost.key]?.length > 0) {
+              this.boostRows[boost.key][0].value = boostValue;
+            } else {
+              // Fallback auf eine Zeile
+              this.boostRows[boost.key] = [{ value: boostValue }];
+            }
+          }
         }
-      } else if (boostValue !== undefined) {
-        // Wenn nur ein Wert vorhanden ist
-        if (this.boostRows[boost.key]?.length > 0) {
-          this.boostRows[boost.key][0].value = boostValue;
-        } else {
-          // Fallback auf eine Zeile
-          this.boostRows[boost.key] = [{ value: boostValue }];
-        }
-      }
-    }
-  });
+      });
 
-  console.log("BoostRows nach Autofill:", this.boostRows); // Debugging
+      console.log("BoostRows nach Autofill:", this.boostRows); // Debugging
 
-  // Berechnungen und Speichern
-  this.updateShortsCalculations();
-  this.saveToLocalStorage();
-},
+      // Berechnungen und Speichern
+      this.updateShortsCalculations();
+      this.saveToLocalStorage();
+    },
 
 
 
@@ -312,30 +333,73 @@ autoFillWithImprovedStats() {
     },
 
     validateAllTimeOrbsInput() {
-      // Überprüft die Eingabe und formatiert bei Verlassen des Feldes
       try {
-        const parsedValue = parseFloat(this.allTimeOrbsInput.replace(/,/g, '')); // Entfernt unerwünschte Zeichen
-        if (!isNaN(parsedValue)) {
-          this.shortsValues.allTimeOrbs = parsedValue;
-          // Aktualisiere das Eingabefeld mit wissenschaftlicher Notation
-          this.allTimeOrbsInput = parsedValue.toExponential(2);
-        } else {
-          // Setzt den Wert auf 0 zurück, wenn die Eingabe ungültig ist
-          this.shortsValues.allTimeOrbs = 0;
-          this.allTimeOrbsInput = '';
+        let input = this.allTimeOrbsInput.trim().toLowerCase(); // Eingabe bereinigen (kleinschreiben, Leerzeichen entfernen)
+
+        // Mapping von Suffixen zu ihren numerischen Werten
+        const suffixMap = {
+          m: 1e6,
+          b: 1e9,
+          t: 1e12,
+          qa: 1e15,
+          qu: 1e18,
+          sx: 1e21,
+          sp: 1e24,
+          oc: 1e27,
+          n:  1e30,
+          d:  1e33
+        };
+
+        const match = input.match(/^([\d.]+)([a-z]+)?$/);
+        if (match) {
+          const [, numberPart, suffix] = match;
+          let parsedValue = parseFloat(numberPart);
+
+          if (suffix && suffixMap[suffix]) {
+            parsedValue *= suffixMap[suffix];
+          }
+
+          if (!isNaN(parsedValue)) {
+            this.shortsValues.allTimeOrbs = parsedValue;
+            this.allTimeOrbsInput = this.formatNumber(parsedValue);
+            this.updateShortsCalculations();
+            this.saveToLocalStorage();
+            return;
+          }
         }
+
+        // Wissenschaftliche Notation direkt verarbeiten
+        if (!isNaN(parseFloat(input))) {
+          const parsedValue = parseFloat(input);
+          this.shortsValues.allTimeOrbs = parsedValue;
+          this.allTimeOrbsInput = this.formatNumber(parsedValue);
+          this.updateShortsCalculations();
+          this.saveToLocalStorage();
+          return;
+        }
+
+        throw new Error('Ungültige Eingabe');
       } catch (error) {
         console.error('Invalid All-Time Orbs input:', error);
         this.shortsValues.allTimeOrbs = 0;
-        this.allTimeOrbsInput = '';
+        this.allTimeOrbsInput = '0.00';
       }
-      this.updateShortsCalculations();
-      this.saveToLocalStorage();
     },
+
+
     handleAllTimeOrbsTyping(event) {
-      // Lasse den Benutzer die Zahl eingeben, ohne die Anzeige zu beeinflussen
-      this.allTimeOrbsInput = event.target.value;
+      const input = event.target.value;
+
+      // Lasse Eingaben in wissenschaftlicher Notation (e.g., 8e9) durch
+      if (/^-?\d+(\.\d+)?e-?\d+$/i.test(input)) {
+        this.allTimeOrbsInput = input; // Direkt setzen, wenn es valide wissenschaftliche Notation ist
+        return;
+      }
+
+      // Andernfalls normalen Text übernehmen
+      this.allTimeOrbsInput = input;
     },
+
     updateShortsCalculations() {
       const { trCount } = this.shortsValues;
       let allTimeOrbs = this.shortsValues.allTimeOrbs;
@@ -350,7 +414,7 @@ autoFillWithImprovedStats() {
         const currentOrbs = this.calculateActualOrbs(i);
 
         const canReach = currentOrbs >= requirement;
-        const missing = canReach ? 0 : (requirement - currentOrbs).toExponential(2);
+        const missing = canReach ? 0 : (requirement - currentOrbs);
 
         const previousAllTimeOrbs = allTimeOrbs; // Speichere den vorherigen Wert
         if (currentOrbs > requirement) {
@@ -359,11 +423,11 @@ autoFillWithImprovedStats() {
           allTimeOrbs += requirement;
         }
 
-        const addedAllTimeOrbs = (allTimeOrbs - previousAllTimeOrbs).toExponential(2); // Differenz berechnen
-        const endAllTimeOrbs = allTimeOrbs.toExponential(2);
+        const addedAllTimeOrbs = (allTimeOrbs - previousAllTimeOrbs); // Differenz berechnen
+        const endAllTimeOrbs = allTimeOrbs;
 
         // Ergebnisse speichern
-        this.trRequirements.push(requirement.toExponential(2));
+        this.trRequirements.push(requirement);
         this.orbResults.push({ canReach, missing, endAllTimeOrbs, addedAllTimeOrbs });
       }
 
@@ -438,67 +502,47 @@ autoFillWithImprovedStats() {
     },
 
 
-saveToLocalStorage() {
-  const storedValues = {
-    shortsValues: this.shortsValues,
-    boostRows: JSON.parse(JSON.stringify(this.boostRows)), // Flaches Objekt speichern
-  };
-  localStorage.setItem('shortsValues', JSON.stringify(storedValues));
-},
+    saveToLocalStorage() {
+      const storedValues = {
+        shortsValues: this.shortsValues,
+        boostRows: JSON.parse(JSON.stringify(this.boostRows)), // Flaches Objekt speichern
+      };
+      localStorage.setItem('shortsValues', JSON.stringify(storedValues));
+    },
 
 
-loadFromLocalStorage() {
-  const savedValues = localStorage.getItem('shortsValues');
-  if (savedValues) {
-    try {
-      const parsedValues = JSON.parse(savedValues);
+    loadFromLocalStorage() {
+      const savedValues = localStorage.getItem('shortsValues');
+      if (savedValues) {
+        try {
+          const parsedValues = JSON.parse(savedValues);
 
-      // Restore shortsValues
-      this.shortsValues = parsedValues.shortsValues || {};
+          // Restore shortsValues
+          this.shortsValues = parsedValues.shortsValues || {};
 
-      // Sicherstellen, dass boostRows reaktiv bleibt
-      const loadedBoostRows = parsedValues.boostRows || {};
-      this.boostRows = reactive(Object.assign({}, loadedBoostRows)); // Sichere Reaktivität
+          // Sicherstellen, dass boostRows reaktiv bleibt
+          const loadedBoostRows = parsedValues.boostRows || {};
+          this.boostRows = reactive(Object.assign({}, loadedBoostRows)); // Sichere Reaktivität
 
-      // Ergänze fehlende Boosts
-      this.boosts.forEach((boost) => {
-        if (boost.expand === '1' && !this.boostRows[boost.key]) {
-          this.boostRows[boost.key] = [{ value: 0 }];
+          // Ergänze fehlende Boosts
+          this.boosts.forEach((boost) => {
+            if (boost.expand === '1' && !this.boostRows[boost.key]) {
+              this.boostRows[boost.key] = [{ value: 0 }];
+            }
+          });
+
+          console.log("Reaktive BoostRows nach Wiederherstellung:", this.boostRows);
+
+          // Setze den Wert für allTimeOrbsInput
+          this.allTimeOrbsInput = this.shortsValues.allTimeOrbs
+            ? this.formatNumber(this.shortsValues.allTimeOrbs)
+            : '';
+
+          // Initialberechnungen
+          this.updateShortsCalculations();
+        } catch (error) {
+          console.error('Fehler beim Laden von Local Storage:', error);
         }
-      });
-
-      console.log("Reaktive BoostRows nach Wiederherstellung:", this.boostRows);
-
-      // Setze den Wert für allTimeOrbsInput
-      this.allTimeOrbsInput = this.shortsValues.allTimeOrbs
-        ? this.shortsValues.allTimeOrbs.toExponential(2)
-        : '';
-
-      // Initialberechnungen
-      this.updateShortsCalculations();
-    } catch (error) {
-      console.error('Fehler beim Laden von Local Storage:', error);
-    }
-  }
-},
-
-
-
-
-
-
-
-
-
-    formatBoostValue(value) {
-      try {
-        if (value >= 1000) {
-          return value.toExponential(2);
-        }
-        return value.toFixed(2);
-      } catch (error) {
-        console.error('Error formatting boost value:', error);
-        return '1.00';
       }
     },
   },
