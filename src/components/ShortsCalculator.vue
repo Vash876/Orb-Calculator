@@ -36,6 +36,7 @@
     name="fade"
     tag="div"
     class="boost-rows-container"
+    v-if="isLoaded"
   >             
   <template v-if="boost.expand === '1'">
               <div
@@ -151,6 +152,7 @@ export default {
       shortsValues: {
         trCount: 0, // TR Count
         allTimeOrbs: 0, // All-Time Orbs
+        isLoaded: false, // Zustand für den Ladevorgang
       },
       allTimeOrbsInput: '', // Rohwert für die Eingabe von All-Time Orbs
       trRequirements: [], // Speichert die berechneten Orb-Anforderungen
@@ -557,6 +559,7 @@ export default {
   mounted() {
     this.loadFromLocalStorage(); // Lade die Werte beim Start
     this.initializeBoostRows();
+    this.isLoaded = true;
   },
 };
 </script>
