@@ -239,7 +239,6 @@ button:hover {
   font-size: 15px; /* Schriftgröße */
   border-radius: 5px; /* Abgerundete Ecken */
   cursor: pointer; /* Zeigt die Hand beim Hovern */
-  transition: background-color 0.3s ease, transform 0.2s ease; /* Animationseffekte */
   max-height: 25px; /* Maximale Höhe des Buttons */
   max-width: 25px;
   display: flex; /* Flexbox aktivieren */
@@ -492,3 +491,27 @@ input[type="number"] {
   visibility: visible; /* Sichtbar bei Hover */
   opacity: 1; /* Volle Deckkraft */
 }
+.invisible {
+  visibility: hidden; /* Unsichtbar, aber Platz bleibt erhalten */
+}
+/* Transition für Einfügen/Entfernen */
+.fade-enter-active {
+  transition: all 0.2s ease; /* Sanfter Übergang */
+}
+
+.fade-leave-active {
+  transition: all 0.2s ease; /* Sanfter Übergang */
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0; /* Unsichtbar */
+  transform: translateY(-40px); /* Leicht verschoben */
+}
+
+.fade-leave-from,
+.fade-enter-to {
+  opacity: 1; /* Sichtbar */
+  transform: translateY(0); /* Normale Position */
+}
+

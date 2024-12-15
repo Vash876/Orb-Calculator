@@ -69,7 +69,7 @@ export const boosts = [
     label: 'Campaigns',
     type: 'number',
     expand: '0',
-    tooltip: '0',
+    tooltip: 'Boon of Ouroboros required, else 0',
     multiplier: (value) => Math.pow(1.006, value),
   },
 

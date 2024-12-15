@@ -28,48 +28,55 @@
             placeholder="e.g 4.5b"
           />
       </div>
+        <!-- Inputs für Boosts -->
+        <div v-for="boost in boosts" :key="boost.key">
+          <!-- Wrapper-Template für expand-Boosts -->
 
-      <!-- Inputs für Boosts -->
-      <div v-for="boost in boosts" :key="boost.key">
-        <!-- Wrapper-Template für expand-Boosts -->
-        <template v-if="boost.expand === '1'">
-          <div
-            v-for="(row, index) in boostRows[boost.key]"
-            :key="`${boost.key}-${index}`"
-            class="input-group"
-          >
-            <!-- Dynamische Label-Namensgebung -->
-            <label class="boost-label">
-              {{ generateLabel(boost.label, index, boostRows[boost.key].length) }}
-            </label>
+  <transition-group
+    name="fade"
+    tag="div"
+    class="boost-rows-container"
+  >             
+  <template v-if="boost.expand === '1'">
+              <div
+                v-for="(row, index) in boostRows[boost.key]"
+                :key="`${boost.key}-${index}`"
+                class="input-group"
+              >
+                <!-- Dynamische Label-Namensgebung -->
+                <label class="boost-label">
+                  {{ generateLabel(boost.label, index, boostRows[boost.key].length) }}
+                </label>
 
-            <!-- Buttons für Zeilenmanagement -->
-            <button
-              class="expand"
-              v-if="index === boostRows[boost.key].length - 1 && boostRows[boost.key].length > 1"
-              @click="removeBoostRow(boost.key, index)"
-            >
-              -
-            </button>
+                <!-- Buttons für Zeilenmanagement -->
+                <button
+                  class="expand"
+                  v-if="index === boostRows[boost.key].length - 1 && boostRows[boost.key].length > 1"
+                  @click="removeBoostRow(boost.key, index)"
+                >
+                  -
+                </button>
 
-            <button
-              class="expand"
-              v-if="index === boostRows[boost.key].length - 1 && boostRows[boost.key].length < 5"
-              @click="addBoostRow(boost.key)"
-            >
-              +
-            </button>
+                <button
+                  class="expand"
+                  v-if="index === boostRows[boost.key].length - 1"
+                  :class="{ invisible: boostRows[boost.key].length >= 5 }"
+                  @click="addBoostRow(boost.key)"
+                >
+                  +
+                </button>
 
-            <!-- Eingabefeld für Boost-Wert -->
-            <input
-              type="number"
-              v-model.number="row.value"
-              @input="updateShortsCalculations"
-              :placeholder="boost.placeholder || ''"
-              :max="boost.max || null"
-            />
-          </div>
-        </template>
+                <!-- Eingabefeld für Boost-Wert -->
+                <input
+                  type="number"
+                  v-model.number="row.value"
+                  @input="updateShortsCalculations"
+                  :placeholder="boost.placeholder || ''"
+                  :max="boost.max || null"
+                />
+              </div>
+
+            </template>
 
         <!-- Für Boosts ohne expand -->
         <template v-else>
@@ -94,6 +101,7 @@
             />
           </div>
         </template>
+</transition-group>
       </div>
     </div>
 
