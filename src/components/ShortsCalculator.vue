@@ -99,18 +99,18 @@
 
     <!-- Ergebnisse -->
     <div class="results">
-      <h3>Orb Requirements and Results</h3>
+      <h3 style="text-align:center">Orb Requirements and Results</h3>
       <table class="results-table">
         <thead>
           <tr>
-            <th>TR Requirement</th>
+            <th>TR Req</th>
             <th>All-Time Orbs</th>
             <th>Status</th>
           </tr>
         </thead>
         <tbody>
           <tr v-for="(requirement, index) in trRequirements" :key="index">
-            <td>TR {{ shortsValues.trCount + index }} Requirement: {{ formatExponential(requirement) }}</td>
+            <td>TR {{ shortsValues.trCount + index }} Req: {{ formatExponential(requirement) }}</td>
             <td :class="{'missing-orbs': !orbResults[index].canReach}">
               {{ formatExponential(orbResults[index].endAllTimeOrbs) }} 
               <span class="added-orbs">
