@@ -18,7 +18,7 @@
         <input
           type="number"
           v-model.number="improvedValues.additionalHours"
-          @input="updateImprovedBoostMultipliers"
+          @input="handleAdditionalHoursInput"
           :placeholder="'Enter additional hours'"
           :class="getFieldBackgroundClass('additionalHours')"
           :disabled="isFieldDisabled('additionalHours')"
@@ -35,7 +35,10 @@
         </template>
         <template v-else>
           <div class="input-group">
-            <label>{{ boost.label }}</label>
+            <label class="tooltip-container">
+              {{ boost.label }}
+              <span v-if="boost.tooltip != 0" class="tooltip-text">{{ boost.tooltip }}</span>
+            </label>
 
             <!-- Eingabefeld für numerische Werte -->
             <input
@@ -73,7 +76,7 @@
 
       <!-- Orb Count -->
       <div class="current-results">
-        <h3>Final Orb Count  : {{ improvedOrbs }}</h3>
+        <h3>Final Orb Count  : {{ formatExponential(improvedOrbs) }}</h3>
       </div>
     </div>
   </div>
@@ -104,6 +107,14 @@ export default {
     ...mapGetters(['currentOrbs', 'improvedOrbs']), // Zugriff auf Getter von Vuex
   },
   methods: {
+    formatExponential(value) {
+      return value.replace('+', '');
+    },
+    handleAdditionalHoursInput() {
+      // Aktualisiere Multiplikatoren und speichere Werte
+      this.updateImprovedBoostMultipliers();
+      this.saveToLocalStorage();
+    },
     isFieldDisabled(key) {
       const boost = this.boosts.find(b => b.key === key);
       if (boost && boost.type === 'number') {

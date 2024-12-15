@@ -84,6 +84,7 @@ input {
   color: #76c7c0;
   font-size: 12px;
   font-weight: bold;
+  padding-right: 5px;
 }
 
 
@@ -144,10 +145,10 @@ button:hover {
 }
 
 .navbar a {
-  font-size: 15px;
+  font-size: 14px;
   color: #ffffff;
   text-decoration: none;
-  padding: 10px 15px; /* Polsterung für Klickbare Fläche */
+  padding: 10px 13px; /* Polsterung für Klickbare Fläche */
   display: inline-flex; /* Stellt sicher, dass alle Links nebeneinander bleiben */
   align-items: center; /* Vertikale Zentrierung des Textes */
 }
@@ -178,38 +179,104 @@ button:hover {
   color: #d3d3d3;
 }
 
-.reset {
-  text-align: center;
-  margin-bottom: 4px;
-  margin-left: auto;
-}
-
-.reset-button button {
-  background-color: #ff4444;
-  color: white;
+.input-group button {
   border: none;
-  padding: 8px 16px;
-  font-size: 14px;
-  border-radius: 4px;
+  border-radius: 5px;
+  padding: 5px 10px;
   cursor: pointer;
 }
 
-.reset-button button:hover {
-  background-color: #cc0000;
+.reset {
+  margin-left: auto; 
+  background-color: #ff4444; /* Roter Hintergrund */
+  color: #ffffff; /* Weißer Text */
+  border: none; /* Keine Umrandung */
+  padding: 10px 20px; /* Abstand innen */
+  font-size: 14px; /* Schriftgröße */
+  border-radius: 5px; /* Abgerundete Ecken */
+  cursor: pointer; /* Zeigt die Hand beim Hovern */
+  transition: background-color 0.3s ease, transform 0.2s ease; /* Animationseffekte */
+  max-height: 25px;
 }
+
+.reset:hover {
+  background-color: #cc0000; /* Dunkleres Rot beim Hover */
+}
+
+.reset:active {
+  background-color: #a30000; /* Noch dunkleres Rot beim Klicken */
+  transform: scale(0.98); /* Leichtes Schrumpfen beim Klicken */
+}
+
+.otherbuttons {
+  background-color: #666666 ; 
+  color: #ffffff; /* Weißer Text */
+  border: none; /* Keine Umrandung */
+  padding: 3px ; /* Abstand innen */
+  font-size: 14px; /* Schriftgröße */
+  border-radius: 5px; /* Abgerundete Ecken */
+  cursor: pointer; /* Zeigt die Hand beim Hovern */
+  transition: background-color 0.3s ease, transform 0.2s ease; /* Animationseffekte */
+  max-height: 25px;
+}
+
+.otherbuttons:hover {
+  background-color: #777777 ; /* Dunkleres Rot beim Hover */
+  color: #f1f1f1;
+}
+
+.otherbuttons:active {
+  background-color: #555555 ; /* Noch dunkleres Rot beim Klicken */
+  color: #e0e0e0;
+  transform: scale(0.98); /* Leichtes Schrumpfen beim Klicken */
+}
+
+.expand {
+  background-color: #666666 ; 
+  color: #ffffff; /* Weißer Text */
+  border: none; /* Keine Umrandung */
+  padding: 3px; /* Abstand innen */
+  font-size: 15px; /* Schriftgröße */
+  border-radius: 5px; /* Abgerundete Ecken */
+  cursor: pointer; /* Zeigt die Hand beim Hovern */
+  transition: background-color 0.3s ease, transform 0.2s ease; /* Animationseffekte */
+  max-height: 25px; /* Maximale Höhe des Buttons */
+  max-width: 25px;
+  display: flex; /* Flexbox aktivieren */
+  align-items: center; /* Vertikale Zentrierung */
+  justify-content: center; /* Horizontale Zentrierung */
+}
+.expand:hover {
+  background-color: #777777 ; /* Dunkleres Rot beim Hover */
+  color: #f1f1f1;
+}
+
+.expand:active {
+  background-color: #555555 ; /* Noch dunkleres Rot beim Klicken */
+  color: #e0e0e0;
+  transform: scale(0.98); /* Leichtes Schrumpfen beim Klicken */
+}
+
 
 /* Container für Eingabegruppen */
 .input-group {
-  display: flex; /* Flexbox für gleichmäßige Ausrichtung */
-  align-items: center; /* Vertikale Ausrichtung der Inhalte */
-  gap: 10px; /* Abstand zwischen Label, Checkbox und Boost-Wert */
-  margin-bottom: 10px; /* Abstand zwischen den Gruppen */
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px; /* Abstand zwischen Elementen */
+  margin-bottom: 10px;
+  padding: 10px; /* Hintergrund bleibt bei Polsterung */
+  border-radius: 4px; /* Runde Ecken, falls gewünscht */
+  background-color: #1e1e1e; /* Hintergrundfarbe */
+  position: relative; /* Stellt sicher, dass der Hintergrund den gesamten Bereich abdeckt */
 }
+
 
 /* Labels für Checkboxen */
 .input-group label {
   flex: 1; /* Füllt den verfügbaren Platz */
   text-align: left; /* Links ausgerichtet */
+  padding-left: 5px;
 }
 
 /* Standard-Stil für Checkboxen */
@@ -390,4 +457,38 @@ input[type="number"] {
 }
 .input-group input[type="checkbox"] {
   margin-left: 63px;
+}
+
+.expanded-boost {
+  width: 100%; /* Verhindert, dass boost-row breiter wird als input-group */
+
+  display: flex; /* Stellt sicher, dass der Inhalt nebeneinander bleibt */
+  align-items: center; /* Vertikale Ausrichtung */
+
+
+}
+.tooltip-container {
+  position: relative; /* Für absolute Positionierung des Tooltips */
+  display: inline-block; /* Damit es mit den Labels oder Eingaben funktioniert */
+}
+
+.tooltip-text {
+  visibility: hidden; /* Standardmäßig nicht sichtbar */
+  background-color: #555; /* Dunkler Hintergrund für den Tooltip */
+  color: #fff; /* Weiße Schriftfarbe */
+  text-align: center; /* Zentrierter Text */
+  border-radius: 5px; /* Abgerundete Ecken */
+  padding: 5px 10px; /* Polsterung innerhalb des Tooltips */
+  position: absolute; /* Absolute Positionierung relativ zum Container */
+  z-index: 1; /* Sicherstellen, dass der Tooltip über allem anderen liegt */
+  bottom: 125%; /* Positionierung über dem Element */
+  left: 50%;
+  transform: translateX(-50%);
+  opacity: 0; /* Unsichtbar bei Hover-Off */
+  transition: opacity 0.3s ease; /* Sanfte Übergänge */
+}
+
+.tooltip-container:hover .tooltip-text {
+  visibility: visible; /* Sichtbar bei Hover */
+  opacity: 1; /* Volle Deckkraft */
 }

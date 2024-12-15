@@ -14,7 +14,10 @@
 
       <!-- Inputs für Boosts -->
       <div v-for="boost in boosts" :key="boost.key" class="input-group">
-        <label>{{ boost.label }}</label>
+        <label class="tooltip-container">
+          {{ boost.label }}
+          <span v-if="boost.tooltip != 0" class="tooltip-text">{{ boost.tooltip }}</span>
+        </label>
 
         <!-- Eingabefeld für numerische Werte -->
         <input 
@@ -50,7 +53,7 @@
 
       <!-- Orb Count -->
       <div class="current-results">
-        <h3>Current Orb Count: {{ currentOrbs }}</h3>
+        <h3>Current Orb Count: {{ formatExponential(currentOrbs) }}</h3>
       </div>
     </div>
   </div>
@@ -78,6 +81,9 @@ export default {
     },
   },
   methods: {
+    formatExponential(value) {
+      return value.replace('+', '');
+    },
     ...mapActions(['setCurrentValues']),
     handleInputChange(boost) {
       const max = boost.max || Infinity;
@@ -179,7 +185,7 @@ export default {
     },
     formatBoostValue(value) {
       try {
-        if (value >= 1000) {
+        if (value >= 1000000) {
           return value.toExponential(2);
         }
         return value.toFixed(2);
