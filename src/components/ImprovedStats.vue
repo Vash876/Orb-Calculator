@@ -14,17 +14,22 @@
 
       <!-- Additional Hours Input -->
       <div class="input-group">
-        <label>Additional Hours</label>
-        <input
-          type="number"
-          v-model.number="improvedValues.additionalHours"
-          @input="handleAdditionalHoursInput"
-          :placeholder="'Enter additional hours'"
+        <label>Planned End of TR</label>
+        <span class="datepicker-icon">📅</span>
+        <flat-pickr
+          type="text"
+          v-flatpickr
+          v-model="improvedValues.selectedDateTime"
+          :config="flatpickrConfig"
+          @update:modelValue="handleDateTimeChange"
+          :placeholder="'Select date and time'"
           :class="getFieldBackgroundClass('additionalHours')"
           :disabled="isFieldDisabled('additionalHours')"
         />
+
+
         <span class="boost-value">
-          {{ formatNumber(Math.pow(improvedBoostMultipliers['additionalHours'],2) || 1) }}
+          {{ formatNumber(Math.pow(improvedBoostMultipliers['additionalHours'], 2) || 1) }}
         </span>
       </div>
 
@@ -86,14 +91,28 @@
 <script>
 import { boosts } from '../store/boosts';
 import { mapGetters } from 'vuex';
+import FlatPickr from 'vue-flatpickr-component';
+import 'flatpickr/dist/flatpickr.css';
+import { directive as vFlatpickr } from "vue-flatpickr-component";
 
 export default {
+  directives: {
+    flatpickr: vFlatpickr,
+  },
+  components: { FlatPickr },
   data() {
     return {
+      flatpickrConfig: {
+        enableTime: true, // Zeit-Auswahl aktivieren
+        dateFormat: "Y-m-d H:00", // Datums- und Zeitformat
+        minuteIncrement: 60,
+        defaultDate: null, // Standarddatum (falls gewünscht)
+      },
       improvedBoostMultipliers: {}, // Speichert Multiplikatoren für jeden Boost
       improvedCupMultiplier: 1, // Speichert den Catch-Up Multiplier
       improvedValues: {
         additionalHours: 0, // Eingabewert für zusätzliche Stunden
+        selectedDateTime: null,
       },
       totalHoursInTR: 0, // Berechnete Gesamtstunden
     };
@@ -108,11 +127,29 @@ export default {
     ...mapGetters(['currentOrbs', 'improvedOrbs']), // Zugriff auf Getter von Vuex
   },
   methods: {
+    handleDateTimeChange() {
+      const selectedDateTime = this.improvedValues.selectedDateTime;
+
+      if (!selectedDateTime) {
+        this.improvedValues.additionalHours = 0;
+        return;
+      }
+
+      const now = new Date();
+      const differenceInHours = (new Date(selectedDateTime) - now) / 3600000;
+
+      this.improvedValues.additionalHours = Math.max(differenceInHours, 0) || 0;
+
+      this.updateImprovedBoostMultipliers();
+      this.saveToLocalStorage();
+
+      this.$store.dispatch("setSelectedDateTime", selectedDateTime);
+    },
+
+
     formatNumber(value) {
       const suffixes = ["", "", "m", "b", "t", "qa", "qu", "sx", "sp", "oc", "n", "d"];
       let tier = Math.floor(Math.log10(value) / 3);
-
-      console.log(`Value: ${value}, Tier: ${tier}, Suffix: ${suffixes[tier]}`);
 
       if (tier === 0) {
         return value.toFixed(2);
@@ -187,7 +224,7 @@ export default {
       this.updateImprovedBoostMultipliers();
       this.saveToLocalStorage();
     },
-      handleImprovedCheckboxChange(boost) {
+    handleImprovedCheckboxChange(boost) {
       const key = boost.key; // Schlüssel des Boosts
       const value = this.improvedValues[key]; // Aktueller Wert der Checkbox
 
@@ -205,6 +242,9 @@ export default {
 
       // Berechnung der zusätzlichen Stunden
       const totalHoursInTR = (this.currentValues.hoursInTR || 0) + (values.additionalHours || 0);
+
+      // Speichere totalHoursInTR im Vuex-Store
+      this.$store.dispatch('setTotalHoursInTR', totalHoursInTR);
 
       // Berechnung des Catch-Up Multis
       this.improvedCupMultiplier = this.calculateImprovedCupMultiplier(totalHoursInTR);

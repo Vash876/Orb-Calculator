@@ -44,8 +44,10 @@ function calculateOrbs(values, isImproved = false) {
 
 export const store = createStore({
   state: {
-    currentValues: {},  // Aktuelle Werte
-    improvedValues: {},  // Verbesserte Werte
+    currentValues: {}, // Aktuelle Werte
+    improvedValues: {}, // Verbesserte Werte
+    totalHoursInTR: 0, // Gesamtstunden im TR
+    selectedDateTime: null, // Speichert das ausgewählte Datum
   },
   getters: {
     currentOrbs(state) {
@@ -64,10 +66,16 @@ export const store = createStore({
   },
   mutations: {
     updateCurrentValues(state, newValues) {
-      state.currentValues = newValues;  // Aktuelle Werte im Store setzen
+      state.currentValues = newValues; // Aktuelle Werte im Store setzen
     },
     updateImprovedValues(state, newValues) {
-      state.improvedValues = newValues;  // Verbesserte Werte im Store setzen
+      state.improvedValues = newValues; // Verbesserte Werte im Store setzen
+    },
+    SET_SELECTED_DATE_TIME(state, selectedDateTime) {
+      state.selectedDateTime = selectedDateTime;
+    },
+    SET_TOTAL_HOURS_IN_TR(state, totalHoursInTR) {
+      state.totalHoursInTR = totalHoursInTR;
     },
   },
   actions: {
@@ -76,6 +84,13 @@ export const store = createStore({
     },
     setImprovedValues({ commit }, newValues) {
       commit('updateImprovedValues', newValues);
+    },
+    setSelectedDateTime({ commit }, selectedDateTime) {
+      commit("SET_SELECTED_DATE_TIME", selectedDateTime);
+    },
+    setTotalHoursInTR({ commit }, totalHoursInTR) {
+      console.log("Vuex: Total Hours in TR:", totalHoursInTR);
+      commit("SET_TOTAL_HOURS_IN_TR", totalHoursInTR);
     },
   },
 });

@@ -527,3 +527,24 @@ input[type="number"] {
 .boost-rows-container {
   position: relative; /* Macht den Container zum Referenzpunkt */
 }
+
+.datepicker-container {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+.datepicker-icon {
+  position: absolute;
+  left: 160px; /* Abstand von der linken Seite */
+  font-size: 16px; /* Symbolgröße */
+  pointer-events: none; /* Verhindert, dass das Symbol anklickbar ist */
+}
+
+.datepicker-container .flatpickr-input {
+  padding-left: 30px; /* Platz für das Symbol im Eingabefeld */
+}
+
+.highlight-yellow {
+  color: yellow; /* Schriftfarbe gelb */
+}

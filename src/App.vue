@@ -5,7 +5,7 @@
       <div class="navbar-center">
         <router-link to="/current-stats" active-class="active-link">Current Stats</router-link>
         <router-link to="/improved-stats" active-class="active-link">Improved Stats</router-link>
-        <router-link to="/shorts-calculator" active-class="active-link">Shorts Calculator</router-link>
+        <router-link to="/shorts-calculator" active-class="active-link">Shorts Planner</router-link>
       </div>
     </div>
 

@@ -9,7 +9,10 @@
 
       <!-- TR Count Eingabe -->
       <div class="input-group">
-        <label>TR Count</label>
+        <label class="tooltip-container">
+          TR Count
+          <span class="tooltip-text">Your Actual TR Count from your Profile Page</span>
+        </label>
         <input
           type="number"
           v-model.number="shortsValues.trCount"
@@ -19,90 +22,97 @@
 
       <!-- All-Time Orbs Eingabe -->
       <div class="input-group">
-        <label>All-Time Orbs</label>
-          <input
-            type="text"
-            v-model="allTimeOrbsInput"
-            @blur="validateAllTimeOrbsInput"
-            @input="handleAllTimeOrbsTyping"
-            placeholder="e.g 4.5b"
-          />
+        <label class="tooltip-container">
+          All-Time Orbs
+          <span class="tooltip-text">Your Actual Orb Count from your Profile Page</span>
+        </label>
+        <input
+          type="text"
+          v-model="allTimeOrbsInput"
+          @blur="validateAllTimeOrbsInput"
+          @input="handleAllTimeOrbsTyping"
+          placeholder="e.g 4.5b"
+        />
       </div>
-        <!-- Inputs für Boosts -->
-        <div v-for="boost in boosts" :key="boost.key">
-          <!-- Wrapper-Template für expand-Boosts -->
 
-  <transition-group
-    name="fade"
-    tag="div"
-    class="boost-rows-container"
-    v-if="isLoaded"
-  >             
-  <template v-if="boost.expand === '1'">
-              <div
-                v-for="(row, index) in boostRows[boost.key]"
-                :key="`${boost.key}-${index}`"
-                class="input-group"
+
+      <!-- Inputs für Boosts -->
+      <div v-for="boost in boosts" :key="boost.key">
+        <transition-group
+          name="fade"
+          tag="div"
+          class="boost-rows-container"
+          v-if="isLoaded"
+        >
+          <!-- Für Boosts mit expand -->
+          <template v-if="boost.expand === '1'">
+            <div
+              v-for="(row, index) in boostRows[boost.key]"
+              :key="`${boost.key}-${index}`"
+              class="input-group"
+            >
+              <!-- Dynamische Label-Namensgebung -->
+              <label class="boost-label tooltip-container">
+                {{ generateLabel(boost.label, index, boostRows[boost.key].length) }}
+
+                <!-- Tooltip nur für index 0 -->
+                <span v-if="index === 0" class="tooltip-text">
+                  Enter hours or days (e.g., 6d). Days will be automatically converted to hours.
+                </span>
+              </label>
+
+              <!-- Buttons für Zeilenmanagement -->
+              <button
+                class="expand"
+                v-if="index === boostRows[boost.key].length - 1 && boostRows[boost.key].length > 1"
+                @click="removeBoostRow(boost.key, index)"
               >
-                <!-- Dynamische Label-Namensgebung -->
-                <label class="boost-label">
-                  {{ generateLabel(boost.label, index, boostRows[boost.key].length) }}
-                </label>
+                -
+              </button>
 
-                <!-- Buttons für Zeilenmanagement -->
-                <button
-                  class="expand"
-                  v-if="index === boostRows[boost.key].length - 1 && boostRows[boost.key].length > 1"
-                  @click="removeBoostRow(boost.key, index)"
-                >
-                  -
-                </button>
+              <button
+                class="expand"
+                v-if="index === boostRows[boost.key].length - 1"
+                :class="{ invisible: boostRows[boost.key].length >= 5 }"
+                @click="addBoostRow(boost.key)"
+              >
+                +
+              </button>
 
-                <button
-                  class="expand"
-                  v-if="index === boostRows[boost.key].length - 1"
-                  :class="{ invisible: boostRows[boost.key].length >= 5 }"
-                  @click="addBoostRow(boost.key)"
-                >
-                  +
-                </button>
+              <!-- Eingabefeld für Boost-Wert -->
+              <input
+                type="text" 
+                v-model="row.value"
+                @input="handleBoostRowInpuut(boost, row)"
+                :max="boost.max"
+              />
+            </div>
+          </template>
 
-                <!-- Eingabefeld für Boost-Wert -->
-                <input
-                  type="number"
-                  v-model.number="row.value"
-                  @input="updateShortsCalculations"
-                  :placeholder="boost.placeholder || ''"
-                  :max="boost.max || null"
-                />
-              </div>
-
-            </template>
-
-        <!-- Für Boosts ohne expand -->
-        <template v-else>
-          <div class="input-group">
-            <label class="tooltip-container">
-              {{ boost.label }}
-              <span v-if="boost.tooltip != 0" class="tooltip-text">{{ boost.tooltip }}</span>
-            </label>
-            <input
-              type="number"
-              v-if="boost.type === 'number'"
-              v-model.number="shortsValues[boost.key]"
-              @input="handleInputChange(boost)"
-              :placeholder="boost.placeholder || ''"
-              :max="boost.max || null"
-            />
-            <input
-              type="checkbox"
-              v-if="boost.type === 'boolean'"
-              v-model="shortsValues[boost.key]"
-              @change="updateShortsCalculations"
-            />
-          </div>
-        </template>
-</transition-group>
+          <!-- Für Boosts ohne expand -->
+          <template v-else>
+            <div class="input-group">
+              <label class="tooltip-container">
+                {{ boost.label }}
+                <span v-if="boost.tooltip != 0" class="tooltip-text">{{ boost.tooltip }}</span>
+              </label>
+              <input
+                type="number"
+                v-if="boost.type === 'number'"
+                v-model.number="shortsValues[boost.key]"
+                @input="handleInputChange(boost)"
+                :placeholder="boost.placeholder || ''"
+                :max="boost.max || null"
+              />
+              <input
+                type="checkbox"
+                v-if="boost.type === 'boolean'"
+                v-model="shortsValues[boost.key]"
+                @change="updateShortsCalculations"
+              />
+            </div>
+          </template>
+        </transition-group>
       </div>
     </div>
 
@@ -110,31 +120,78 @@
     <div class="results">
       <h3 style="text-align:center">Orb Requirements and Results</h3>
       <table class="results-table">
-        <thead>
-          <tr>
-            <th>TR Req</th>
-            <th>All-Time Orbs</th>
-            <th>Status</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="(requirement, index) in trRequirements" :key="index">
-            <td>TR {{ shortsValues.trCount + index }} Req: {{ formatNumber(requirement) }}</td>
-            <td :class="{'missing-orbs': !orbResults[index].canReach}">
-              {{ formatNumber(orbResults[index].endAllTimeOrbs) }} 
-              <span class="added-orbs">
-                (+{{ formatNumber(orbResults[index].addedAllTimeOrbs) }})
-              </span>
-            </td>
-            <td>
-              <span
-                :class="{'fulfilled': orbResults[index].canReach, 'missing': !orbResults[index].canReach}">
-                {{ orbResults[index].canReach ? 'Fulfilled' : 'Missing (' + formatNumber(orbResults[index].missing) + ')' }}
-              </span>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+  <thead>
+    <tr>
+      <th>TR Type</th>
+      <th>TR Req</th>
+      <th>Start / End Date</th>
+      <th>Available Orbs</th>
+      <th>All-Time Orbs (Gains)</th>
+      <th>Status</th>
+    </tr>
+  </thead>
+  <tbody>
+    <!-- Long TR Zeile -->
+    <tr>
+      <td>Long</td>
+      <td>TR {{ shortsValues.trCount }} Req: {{ formatNumber(trRequirements[0]) }}</td>
+      <td>~ {{ formatDateLong(calculateStartDateLong()) }}</td>
+      <td>{{ calculateAvailableOrbs(0) }}</td>
+      <td :class="{'missing-orbs': !orbResults[0]?.canReach}">
+        {{ formatNumber(orbResults[0]?.endAllTimeOrbs || 0) }}
+        <span class="added-orbs">
+          (+{{ formatNumber(orbResults[0]?.addedAllTimeOrbs || 0) }})
+        </span>
+      </td>
+      <td>
+        <span
+          :class="{'fulfilled': orbResults[0]?.canReach, 'missing': !orbResults[0]?.canReach}">
+          {{ orbResults[0]?.canReach ? 'Fulfilled' : 'Missing (' + formatNumber(orbResults[0]?.missing || 0) + ')' }}
+        </span>
+      </td>
+    </tr>
+
+    <!-- Short TR Zeilen -->
+    <tr v-for="(requirement, index) in trRequirements.slice(1)" :key="index + 1">
+      <td :class="{'missing-orbs': !orbResults[index + 1]?.canReach}">
+        Short #{{ index + 1 }}
+      </td>
+      <td :class="{'missing-orbs': !orbResults[index + 1]?.canReach}">
+        TR {{ shortsValues.trCount + index + 1 }} Req: {{ formatNumber(requirement) }}
+      </td>
+      <td :class="{
+        'missing-orbs': !orbResults[index]?.canReach && index > 0,
+        'highlight-yellow': isFirstMissing(index+1)
+      }">
+        {{ calculateStartDate(index) }}
+      </td>
+      <td :class="{'missing-orbs': !orbResults[index + 1]?.canReach}">
+        {{ calculateAvailableOrbs(index+1) }}
+      </td>
+      <td :class="{'missing-orbs': !orbResults[index + 1]?.canReach}">
+        {{ formatNumber(orbResults[index + 1]?.endAllTimeOrbs || 0) }}
+        <span class="added-orbs">
+          (+{{ formatNumber(orbResults[index + 1]?.addedAllTimeOrbs || 0) }})
+        </span>
+      </td>
+      <td>
+        <span
+          :class="{'fulfilled': orbResults[index + 1]?.canReach, 'missing': !orbResults[index + 1]?.canReach}">
+          {{
+            orbResults[index + 1]?.canReach
+              ? 'Fulfilled'
+              : `Missing (${formatNumber(orbResults[index + 1]?.missing || 0)})`
+          }}
+        </span>
+      </td>
+    </tr>
+
+  </tbody>
+</table>
+
+
+
+
     </div>
   </div>
 </template>
@@ -168,15 +225,136 @@ export default {
     boosts() {
       return boosts; // Boost-Daten aus der Datei
     },
-    ...mapGetters(['currentValues']), // Zugriff auf Current Stats aus Vuex
+    ...mapGetters(['currentValues', 'improvedOrbs']), // Zugriff auf Current Stats und Improved Orbs aus Vuex
   },
   methods: {
+
+    handleBoostRowInpuut(boost, row) {
+    const input = row.value;
+
+    // Prüfe, ob die Eingabe ein `d` enthält (z. B. `15d`)
+    const daysMatch = input.toString().match(/^(\d+)d$/i); // Erlaubt Eingaben wie `15d` oder `15D`
+
+    if (daysMatch) {
+      const days = parseInt(daysMatch[1], 10); // Extrahiere die Zahl vor `d`
+      row.value = days * 24; // Rechne Tage in Stunden um
+    } else if (!isNaN(input)) {
+      // Falls es eine reguläre Zahl ist, bleibt sie unverändert
+      row.value = parseInt(input, 10);
+    } else {
+      // Für ungültige Eingaben: optional zurücksetzen oder ignorieren
+      row.value = '';
+    }
+
+    // Prüfe auf maximale Begrenzung
+    if (row.value > boost.max) {
+      row.value = boost.max;
+    }
+
+    // Aktualisiere die Berechnungen
+    this.updateShortsCalculations();
+  }, 
+
+    isFirstMissing(index) {
+    // Prüft, ob die aktuelle Zeile "Missing" ist
+    const currentIsMissing = !this.orbResults[index]?.canReach;
+
+    // Prüft, ob alle vorherigen Zeilen erfüllt sind
+    const previousAllFulfilled = this.orbResults.slice(0, index).every(result => result?.canReach);
+
+    // Die aktuelle Zeile ist die erste mit "Missing", wenn alle vorherigen erfüllt sind
+    return currentIsMissing && previousAllFulfilled;
+  },
+
+    handleBoostRowInput(boost, row) {
+      const max = boost.max || Infinity; // Maximalwert prüfen
+      if (row.value > max) {
+        row.value = max; // Wenn der Wert größer als max ist, begrenze ihn
+      }
+      this.updateShortsCalculations(); // Berechnungen aktualisieren
+    },
+
+    calculateAvailableOrbs(index) {
+      let totalOrbs = 0;
+
+      for (let i = 0; i <= index; i++) {
+        const addedOrbs = this.orbResults[i]?.addedAllTimeOrbs || 0; // Wert in Klammern
+        totalOrbs += addedOrbs;
+      }
+
+      return this.formatNumber(totalOrbs);
+    },
+
+    calculateStartDate(index) {
+      // Startdatum aus dem Store für Index 0
+      if (index === 0) {
+        return this.formatDate(this.$store.state.selectedDateTime) || '-';
+      }
+
+      // Startdatum initialisieren
+      const startDate = new Date(this.$store.state.selectedDateTime);
+      if (isNaN(startDate.getTime())) return '-'; // Sicherstellen, dass das Datum gültig ist
+
+      let totalHours = 0;
+
+      for (let i = 0; i < index; i++) {
+        const boostRows = this.boostRows["hoursInTR"] || [];
+        let value;
+
+        // Prüfen, ob eine spezifische Zeile für den aktuellen Index existiert
+        if (boostRows[i] && boostRows[i].value !== undefined) {
+          value = boostRows[i].value;
+        } else {
+          // Falls keine spezifische Zeile existiert, den Wert der letzten Zeile nehmen
+          value = boostRows.length > 0 ? boostRows[boostRows.length - 1].value : 0;
+        }
+
+        totalHours += value || 0;
+      }
+
+      // Stunden in Millisekunden umrechnen und Datum berechnen
+      const newDate = new Date(startDate.getTime() + totalHours * 3600000);
+
+      return this.formatDate(newDate);
+    },
+
+    formatDateLong(date) {
+      if (!date) return '-';
+      // Falls das Datum ein String ist, erst in ein Date-Objekt umwandeln
+      const validDate = typeof date === 'string' ? new Date(date) : date;
+      if (isNaN(validDate)) return '-'; // Falls das Datum ungültig ist
+
+      const day = validDate.getDate().toString().padStart(2, '0');
+      const month = (validDate.getMonth() + 1).toString().padStart(2, '0'); // Monate sind nullbasiert
+      const year = validDate.getFullYear();
+      return `${month}/${day}/${year}`;
+    },
+
+    formatDate(date) {
+      if (!date) return '-';
+      
+      // Versuche, ein Date-Objekt zu erstellen
+      const validDate = typeof date === 'string' ? new Date(date) : date;
+
+      // Fallback für ungültige Daten
+      if (isNaN(validDate.getTime())) return date; // Zeige den Originalwert an, falls kein gültiges Datum
+
+      const day = validDate.getDate().toString().padStart(2, '0');
+      const month = (validDate.getMonth() + 1).toString().padStart(2, '0'); // Monate sind nullbasiert
+      const year = validDate.getFullYear();
+
+      let hours = validDate.getHours();
+      const minutes = validDate.getMinutes().toString().padStart(2, '0');
+      const ampm = hours >= 12 ? 'PM' : 'AM';
+      hours = hours % 12 || 12; // Stunden im 12-Stunden-Format umwandeln (0 -> 12)
+
+      return `${month}/${day}/${year} ${hours}:${minutes} ${ampm}`;
+    },
+
 
     formatNumber(value) {
       const suffixes = ["", "", "m", "b", "t", "qa", "qu", "sx", "sp", "oc", "n", "d"];
       let tier = Math.floor(Math.log10(value) / 3);
-
-      console.log(`Value: ${value}, Tier: ${tier}, Suffix: ${suffixes[tier]}`);
 
       if (tier === 0) {
         return value.toFixed(2);
@@ -193,12 +371,15 @@ export default {
     },
 
     initializeBoostRows() {
-      this.boosts.forEach((boost) => {
-        if (boost.expand === '1' && !this.boostRows[boost.key]) {
-          this.boostRows[boost.key] = [{ value: 0 }];
-        }
-      });
-    },
+  this.boosts.forEach((boost) => {
+    if (boost.expand === '1' && !this.boostRows[boost.key]) {
+      // Initialisiere nur eine Zeile pro Boost standardmäßig
+      this.boostRows[boost.key] = [{ value: 0 }];
+    }
+  });
+},
+
+
 
     addBoostRow(key) {
       if (this.boostRows[key].length < 5) {
@@ -237,6 +418,13 @@ export default {
       return rows.length > 0 ? rows[rows.length - 1].value : 0; // Letzte Zeile oder 0, wenn keine vorhanden
     },
 
+
+
+
+
+
+
+
     handleInputChange(boost) {
       const max = boost.max || Infinity; // Maximalwert des Boosts
       const key = boost.key; // Schlüssel des aktuellen Boosts
@@ -255,8 +443,6 @@ export default {
     autoFillWithImprovedStats() {
       const improvedValues = this.$store.state.improvedValues;
 
-      console.log("Improved Values aus Vuex:", improvedValues); // Debugging
-
       // shortsValues für nicht-expandierbare Felder aktualisieren
       this.shortsValues = {
         ...this.shortsValues,
@@ -270,7 +456,6 @@ export default {
       // boostRows für erweiterbare Felder aktualisieren
       this.boosts.forEach((boost) => {
         if (boost.expand === '1') {
-          console.log(`Aktualisiere boostRows für ${boost.key}`); // Debugging
 
           const boostValue = improvedValues[boost.key];
 
@@ -302,8 +487,6 @@ export default {
           }
         }
       });
-
-      console.log("BoostRows nach Autofill:", this.boostRows); // Debugging
 
       // Berechnungen und Speichern
       this.updateShortsCalculations();
@@ -390,7 +573,6 @@ export default {
 
         throw new Error('Ungültige Eingabe');
       } catch (error) {
-        console.error('Invalid All-Time Orbs input:', error);
         this.shortsValues.allTimeOrbs = 0;
         this.allTimeOrbsInput = '0.00';
       }
@@ -416,58 +598,68 @@ export default {
       this.trRequirements = [];
       this.orbResults = [];
 
-      for (let i = 0; i < 5; i++) {
-        const currentTR = trCount + i;
-        const requirement = this.calculateOrbRequirement(currentTR, allTimeOrbs);
 
-        // Berechnung der tatsächlichen Orbs unter Berücksichtigung der Boost-Werte
-        const currentOrbs = this.calculateActualOrbs(i);
+      for (let i = 0; i < 6; i++) {
+        const currentTR = trCount + i;
+
+      if (i === 0) {
+        // Long TR Calculation
+        const requirement = this.calculateOrbRequirement(currentTR, allTimeOrbs);
+        const finalOrbCount = this.improvedOrbs;
+        const addedOrbs = finalOrbCount;
+        const endAllTimeOrbs = allTimeOrbs + finalOrbCount;
+
+        this.trRequirements.push(requirement);
+        this.orbResults.push({
+          canReach: true,
+          missing: 0,
+          endAllTimeOrbs,
+          addedAllTimeOrbs: addedOrbs,
+        });
+
+        allTimeOrbs = endAllTimeOrbs;
+      } else {
+        // Short TR Calculations
+        const requirement = this.calculateOrbRequirement(currentTR, allTimeOrbs);
+        const currentOrbs = this.calculateActualOrbs(i-1);
 
         const canReach = currentOrbs >= requirement;
         const missing = canReach ? 0 : (requirement - currentOrbs);
 
-        const previousAllTimeOrbs = allTimeOrbs; // Speichere den vorherigen Wert
+        const previousAllTimeOrbs = allTimeOrbs;
         if (currentOrbs > requirement) {
           allTimeOrbs += currentOrbs;
         } else {
           allTimeOrbs += requirement;
         }
 
-        const addedAllTimeOrbs = (allTimeOrbs - previousAllTimeOrbs); // Differenz berechnen
+        const addedAllTimeOrbs = allTimeOrbs - previousAllTimeOrbs;
         const endAllTimeOrbs = allTimeOrbs;
 
-        // Ergebnisse speichern
         this.trRequirements.push(requirement);
         this.orbResults.push({ canReach, missing, endAllTimeOrbs, addedAllTimeOrbs });
       }
+    }
 
-      // Aktualisiere actualOrbs und orbRequirement
-      this.orbRequirement = this.calculateOrbRequirement(trCount, this.shortsValues.allTimeOrbs);
-      this.actualOrbs = this.calculateActualOrbs(0);
+  this.orbRequirement = this.calculateOrbRequirement(trCount, this.shortsValues.allTimeOrbs);
+  this.actualOrbs = this.calculateActualOrbs(0);
 
-      this.saveToLocalStorage();
-    },
+  this.saveToLocalStorage();
+},
 
-    calculateOrbRequirement(trCount, allTimeOrbs) {
-      return (
-        5 * Math.pow(1.2 + trCount * 0.008, trCount) +
-        5000 +
-        allTimeOrbs * 0.13
-      ) * Math.pow(1.02, trCount - 11);
-    },
+
 
     calculateActualOrbs(rowIndex) {
       let result = 1;
 
-      // Berechnung des Catch-Up Multipliers
       const hoursInTR = this.getBoostValueForRow("hoursInTR", rowIndex);
       const loopMods = this.shortsValues.loopMods || 0; // loopMods ist nicht erweiterbar
+
       const catchUpMultiplier = Math.min(
         2,
         Math.max(1, hoursInTR ? (hoursInTR * 0.00024) / 0.25 + 1 : 1)
       );
 
-      // Berechnung des hoursInTRResult
       const hoursInTRResult = Math.sqrt(
         Math.pow(
           1 +
@@ -480,15 +672,12 @@ export default {
         )
       );
 
-      // Durchlaufe alle Boosts
       this.boosts.forEach((boost) => {
         let value;
 
         if (boost.expand === "1") {
-          // Boost-Wert aus boostRows holen (für erweiterbare Boosts)
           value = this.getBoostValueForRow(boost.key, rowIndex);
         } else {
-          // Boost-Wert aus shortsValues holen (für nicht erweiterbare Boosts)
           value = this.shortsValues[boost.key] || 0;
         }
 
@@ -505,19 +694,36 @@ export default {
         }
       });
 
-      // Catch-Up-Multiplikator anwenden
       result *= catchUpMultiplier;
-
       return result;
+    },
+
+    calculateOrbRequirement(trCount, allTimeOrbs) {
+      return (
+        5 * Math.pow(1.2 + trCount * 0.008, trCount) +
+        5000 +
+        allTimeOrbs * 0.13
+      ) * Math.pow(1.02, trCount - 11);
     },
 
 
     saveToLocalStorage() {
       const storedValues = {
         shortsValues: this.shortsValues,
-        boostRows: JSON.parse(JSON.stringify(this.boostRows)), // Flaches Objekt speichern
+        boostRows: JSON.parse(JSON.stringify(this.boostRows)),
       };
       localStorage.setItem('shortsValues', JSON.stringify(storedValues));
+    },
+
+    calculateStartDateLong() {
+      const hoursInTR = this.currentValues.hoursInTR || 0;
+
+      // Aktuelles Datum und Stunden in Tagen umrechnen
+      const daysInTR = hoursInTR / 24;
+      const startDate = new Date();
+      startDate.setDate(startDate.getDate() - daysInTR);
+
+      return startDate;
     },
 
 
@@ -540,8 +746,6 @@ export default {
               this.boostRows[boost.key] = [{ value: 0 }];
             }
           });
-
-          console.log("Reaktive BoostRows nach Wiederherstellung:", this.boostRows);
 
           // Setze den Wert für allTimeOrbsInput
           this.allTimeOrbsInput = this.shortsValues.allTimeOrbs

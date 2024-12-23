@@ -48,7 +48,7 @@ export const boosts = [
     key: 'inscryption52',
     label: 'Inscryption #52',
     type: 'number',
-    expand: '0',
+    expand: '1',
     tooltip: 'max Value: 8',
     multiplier: (value) => Math.pow(1.03, value),
     max: 8
@@ -58,7 +58,7 @@ export const boosts = [
     key: 'inscryption78',
     label: 'Inscryption #78',
     type: 'number',
-    expand: '0',
+    expand: '1',
     tooltip: 'max Value: 8',
     multiplier: (value) => Math.pow(1.08, value),
     max: 8
@@ -77,7 +77,7 @@ export const boosts = [
     key: 'gadget',
     label: 'Gadget',
     type: 'number',
-    expand: '0',
+    expand: '1',
     tooltip: '0',
     multiplier: (value) => {
       // Additionsbonus
