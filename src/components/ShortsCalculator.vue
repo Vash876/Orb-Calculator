@@ -356,6 +356,13 @@ export default {
       const suffixes = ["", "", "m", "b", "t", "qa", "qu", "sx", "sp", "oc", "n", "d"];
       let tier = Math.floor(Math.log10(value) / 3);
 
+      console.log(`Value: ${value}, Tier: ${tier}, Suffix: ${suffixes[tier]}`);
+
+      // Füge eine Bedingung hinzu, um Werte zwischen 1000 und 999999 direkt zurückzugeben
+      if (value >= 1000 && value < 1000000) {
+        return value.toFixed(0); // Ganze Zahl ohne Dezimalstellen
+      }
+
       if (tier === 0) {
         return value.toFixed(2);
       }
