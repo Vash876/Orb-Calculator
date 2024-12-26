@@ -56,7 +56,7 @@
                 {{ generateLabel(boost.label, index, boostRows[boost.key].length) }}
 
                 <!-- Tooltip nur für index 0 -->
-                <span v-if="index === 0" class="tooltip-text">
+                <span v-if="index === 0 && boost.key === 'hoursInTR'" class="tooltip-text">
                   Enter hours or days (e.g., 6d). Days will be automatically converted to hours.
                 </span>
               </label>
@@ -175,17 +175,24 @@
         </span>
       </td>
       <td>
-        <span
-          :class="{'fulfilled': orbResults[index + 1]?.canReach, 'missing': !orbResults[index + 1]?.canReach}">
-          {{
-            orbResults[index + 1]?.canReach
-              ? 'Fulfilled'
-              : `Missing (${formatNumber(orbResults[index + 1]?.missing || 0)})`
-          }}
-        </span>
-      </td>
-    </tr>
+  <span
+    :class="{'fulfilled': orbResults[index + 1]?.canReach, 'missing': !orbResults[index + 1]?.canReach}"
+    class="tooltip-container">
+    {{
+      orbResults[index + 1]?.canReach
+        ? 'Fulfilled'
+        : `Missing (${formatNumber(orbResults[index + 1]?.missing || 0)})`
+    }}
+    <!-- Tooltip für Additional Hours -->
+    <span
+      v-if="!orbResults[index + 1]?.canReach"
+      class="tooltip-text">
+      Requires + {{ calculateAdditionalHours(index + 1) }} hours in TR, in total {{ calculateAdditionalHours(index + 1) + getBoostValueForRow('hoursInTR', index) }} hours 
+    </span>
+  </span>
+</td>
 
+    </tr>
   </tbody>
 </table>
 
@@ -228,6 +235,122 @@ export default {
     ...mapGetters(['currentValues', 'improvedOrbs']), // Zugriff auf Current Stats und Improved Orbs aus Vuex
   },
   methods: {
+
+
+    calculateAdditionalHours(index) {
+  const missingOrbs = this.orbResults[index]?.missing || 0; // Fehlende Orbs für die Zeile
+
+  // Passe den Index für hoursInTR an (z. B. -1)
+  const currentHoursInTR =
+    index > 0 ? this.getBoostValueForRow("hoursInTR", index - 1) : 0; // Fallback für erste Zeile
+
+  if (missingOrbs > 0) {
+    // Berechne zusätzliche Stunden und gib sie zurück
+    return this.calculateMissingHours(currentHoursInTR, missingOrbs, index);
+  }
+
+  return 0; // Wenn keine Orbs fehlen, sind keine zusätzlichen Stunden nötig
+},
+
+calculateMissingHours(currentHours, missingOrbs, rowIndex) {
+  const maxIterations = 1000; // Sicherheitsgrenze für die Iteration
+  let additionalHours = 0;
+
+  // Passe den Index für hoursInTR an (z. B. rowIndex - 1)
+  const effectiveRowIndex = rowIndex > 0 ? rowIndex - 1 : 0;
+
+  let generatedOrbs = this.calculateOrbsWithHours(currentHours, effectiveRowIndex); // Initiale Berechnung
+  let orbsTarget = generatedOrbs + missingOrbs;
+  let iterations = 0;
+
+
+  // Phase 1: Erhöhe in 10er-Schritten
+  while (generatedOrbs < orbsTarget && iterations < maxIterations) {
+    currentHours += 10;
+    additionalHours += 10;
+    generatedOrbs = this.calculateOrbsWithHours(currentHours, effectiveRowIndex); // Berechne mit neuen Stunden
+    iterations++;
+  }
+
+  // Phase 2: Feineinstellung mit 1er-Schritten
+  while (generatedOrbs >= orbsTarget && iterations < maxIterations) {
+    currentHours -= 1;
+    additionalHours -= 1;
+    generatedOrbs = this.calculateOrbsWithHours(currentHours, effectiveRowIndex); // Berechne mit neuen Stunden
+    iterations++;
+  }
+
+  additionalHours += 1;
+
+  return additionalHours; // Zusätzliche Stunden zurückgeben
+},
+
+
+
+
+
+
+calculateOrbsWithHours(hoursInTR, rowIndex) {
+  let result = 1;
+
+  // Hole loopMods oder setze auf 0, wenn nicht verfügbar
+  const loopMods = this.shortsValues.loopMods || 0;
+
+  // Berechne den Catch-Up-Multiplier
+  const catchUpMultiplier = Math.min(
+    2,
+    Math.max(1, hoursInTR ? (hoursInTR * 0.00024) / 0.25 + 1 : 1)
+  );
+
+  // Berechne das Basisergebnis für hoursInTR und loopMods
+  const hoursInTRResult = Math.sqrt(
+    Math.pow(
+      1 +
+        Math.pow(
+          hoursInTR,
+          Math.min(2.42, 1.02 + hoursInTR * 0.00256)
+        ) *
+          Math.pow(loopMods, Math.min(2.42, 1.02 + loopMods * 0.00005)),
+      0.06
+    )
+  );
+
+  // Iteriere durch alle Boosts
+  this.boosts.forEach((boost) => {
+    let value;
+
+    // Prüfe, ob der Boost erweiterbar ist
+    if (boost.expand === "1") {
+      value = this.getBoostValueForRow(boost.key, rowIndex); // Hole den Wert für die spezifische Zeile
+    } else {
+      value = this.shortsValues[boost.key] || 0; // Standardwert 0, falls nicht gesetzt
+    }
+
+    // Behandlung von numerischen Boosts
+    if (boost.type === "number" && value !== undefined && value !== null) {
+      if (boost.key === "hoursInTR" || boost.key === "loopMods") {
+        result *= hoursInTRResult; // Spezielle Multiplikation für hoursInTR und loopMods
+      } else if (typeof boost.multiplier === "function") {
+        const multiplierResult = boost.multiplier(value) || 1;
+        result *= multiplierResult;
+      }
+    }
+
+    // Behandlung von Boolean-Boosts
+    if (boost.type === "boolean" && value) {
+      result *= boost.multiplier || 1;
+    }
+  });
+
+  // Gesamtergebnis mit Catch-Up-Multiplier
+  result *= catchUpMultiplier;
+  return result;
+},
+
+
+
+
+
 
     handleBoostRowInpuut(boost, row) {
     const input = row.value;
@@ -355,8 +478,6 @@ export default {
     formatNumber(value) {
       const suffixes = ["", "", "m", "b", "t", "qa", "qu", "sx", "sp", "oc", "n", "d"];
       let tier = Math.floor(Math.log10(value) / 3);
-
-      console.log(`Value: ${value}, Tier: ${tier}, Suffix: ${suffixes[tier]}`);
 
       // Füge eine Bedingung hinzu, um Werte zwischen 1000 und 999999 direkt zurückzugeben
       if (value >= 1000 && value < 1000000) {
