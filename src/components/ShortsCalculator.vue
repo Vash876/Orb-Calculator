@@ -1,6 +1,49 @@
 <template>
   <div class="shorts-calculator">
     <div class="inputs-container">
+    <!-- FAQ Button -->
+    <div class="input-group">
+      <button class="faq-button" @click="toggleFAQ">Instructions</button>
+    </div>
+
+    <!-- Overlay -->
+    <div v-if="showFAQ" class="faq-overlay">
+      <div class="faq-content">
+        <button class="close-button" @click="toggleFAQ">X</button>
+        <h2>Instructions</h2>
+        <div class="faq-text">
+          <div style="max-height: 80vh; overflow-y: auto; padding: 10px; box-sizing: border-box;">
+            <p>To get the Shorts Planner working properly and see all results correctly, you need to fill out the following:</p>
+            <ul style="line-height: 1.8;">
+              <li>
+                Fill out all stats on "Current Stats":
+                <ul>
+                  <li><strong>Hours in TR</strong> is required to calculate the starting date of your Long TR.</li>
+                </ul>
+              </li>
+              <li>
+                Fill out stats on "Improved Stats":
+                <ul>
+                  <li><strong>Planned End of TR</strong> is needed to calculate the starting date of your first Short.</li>
+                  <li><strong>Final Orb Count</strong> is required to calculate your All-Time Orbs after your Long TR.</li>
+                </ul>
+              </li>
+              <li>
+                Fill out stats on "Shorts Planner":
+                <ul>
+                  <li><strong>TR Count:</strong> Your actual TR count, found on your profile page.</li>
+                  <li><strong>All-Time Orbs:</strong> Your actual All-Time Orbs, also found on your profile page.</li>
+                  <li>The rest should be self-explanatory.</li>
+                </ul>
+              </li>
+            </ul>
+            <p>Example of the profile page:</p>
+            <h2><img src="@/assets/example.png" alt="Profile Page Example" style="max-width: 100%; height: auto; border: 1px solid #ccc; border-radius: 4px;"></h2>
+          </div>
+        </div>
+      </div>
+  </div>
+
       <!-- Buttons für Auto-Fill und Reset -->
       <div class="input-group">
         <button class="otherbuttons" @click="autoFillWithImprovedStats">Auto-Fill with Improved Stats</button>
@@ -218,6 +261,7 @@ export default {
         allTimeOrbs: 0, // All-Time Orbs
         isLoaded: false, // Zustand für den Ladevorgang
       },
+      showFAQ: false, // Steuert die Sichtbarkeit des FAQ-Overlays
       allTimeOrbsInput: '', // Rohwert für die Eingabe von All-Time Orbs
       trRequirements: [], // Speichert die berechneten Orb-Anforderungen
       orbResults: [], // Speichert, ob die Anforderungen erfüllt werden
@@ -236,6 +280,10 @@ export default {
   },
   methods: {
 
+
+    toggleFAQ() {
+      this.showFAQ = !this.showFAQ; // Umschalten zwischen Anzeige und Verbergen
+    },
 
     calculateAdditionalHours(index) {
   const missingOrbs = this.orbResults[index]?.missing || 0; // Fehlende Orbs für die Zeile
@@ -409,17 +457,16 @@ calculateOrbsWithHours(hoursInTR, rowIndex) {
     },
 
     calculateStartDate(index) {
-      // Startdatum aus dem Store für Index 0
-      if (index === 0) {
-        return this.formatDate(this.$store.state.selectedDateTime) || '-';
-      }
+      // Standarddatum verwenden, wenn kein Datum im Store verfügbar ist
+      const storeDate = this.$store.state.selectedDateTime || new Date();
 
       // Startdatum initialisieren
-      const startDate = new Date(this.$store.state.selectedDateTime);
-      if (isNaN(startDate.getTime())) return '-'; // Sicherstellen, dass das Datum gültig ist
+      const startDate = new Date(storeDate);
+      if (isNaN(startDate.getTime())) return '-'; // Fallback, falls Datum ungültig ist
 
       let totalHours = 0;
 
+      // Stunden für die Berechnung sammeln
       for (let i = 0; i < index; i++) {
         const boostRows = this.boostRows["hoursInTR"] || [];
         let value;
@@ -467,11 +514,10 @@ calculateOrbsWithHours(hoursInTR, rowIndex) {
       const year = validDate.getFullYear();
 
       let hours = validDate.getHours();
-      const minutes = validDate.getMinutes().toString().padStart(2, '0');
       const ampm = hours >= 12 ? 'PM' : 'AM';
       hours = hours % 12 || 12; // Stunden im 12-Stunden-Format umwandeln (0 -> 12)
 
-      return `${month}/${day}/${year} ${hours}:${minutes} ${ampm}`;
+      return `${month}/${day}/${year} ${hours}:00 ${ampm}`;
     },
 
 

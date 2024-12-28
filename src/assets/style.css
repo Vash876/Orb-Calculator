@@ -548,3 +548,76 @@ input[type="number"] {
 .highlight-yellow {
   color: yellow; /* Schriftfarbe gelb */
 }
+
+/* FAQ Button */
+.faq-button {
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  cursor: pointer;
+  padding: 3px ; /* Abstand innen */
+  font-size: 14px; /* Schriftgröße */
+  border-radius: 5px; /* Abgerundete Ecken */
+  transition: background-color 0.3s ease, transform 0.2s ease; /* Animationseffekte */
+  max-height: 25px;
+}
+
+.faq-button:hover {
+  background-color: #45a049;
+}
+
+.faq-button:active {
+  background-color: #3d8b40 ; /* Noch dunkleres Rot beim Klicken */
+  transform: scale(0.98); /* Leichtes Schrumpfen beim Klicken */
+}
+
+/* Overlay */
+.faq-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+/* FAQ Content */
+.faq-content {
+  background-color: #333;
+  padding: 20px;
+  border-radius: 8px;
+  width: 80%;
+  max-width: 600px;
+  text-align: left;
+  position: relative;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Close Button */
+.close-button {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background-color: red;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.close-button:hover {
+  background-color: darkred;
+}
+
+/* FAQ Text */
+.faq-text {
+  margin-top: 20px;
+  font-size: 16px;
+  color: white;
+}
