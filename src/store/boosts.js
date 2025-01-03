@@ -80,13 +80,11 @@ export const boosts = [
     expand: '1',
     tooltip: '0',
     multiplier: (value) => {
-      // Additionsbonus
-      const baseMultiplier = Math.pow(1.005, value) - 1;
-      // Alle 10 Levels mit 1.05 multiplizieren
-      const levelMultiplier = Math.pow(1.05, Math.floor(value / 10));
-      // Rückgabe des Gesamtmultiplikators
-      return 1 + baseMultiplier * levelMultiplier;
-    }  
+      const baseMultiplier = Math.pow(1 + 0.0035, value);
+      const levelMultiplier = Math.pow(1.04, Math.floor(value / 10));
+
+      return 1 * baseMultiplier * levelMultiplier;
+    } 
   },
 
   {
